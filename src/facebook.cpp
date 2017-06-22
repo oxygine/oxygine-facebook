@@ -12,10 +12,25 @@
 
 
 
-#define FB_EXT_ENABLED 1
-
 namespace facebook
 {
+    namespace internal
+    {
+        cbInit          fInit = []() {};
+        cbFree          fFree = []() {};
+        cbLogin         fLogin = []() {};
+        cbLogout        fLogout = []() {};
+        cbNewMeRequest  fNewMeRequest = []() {};
+        cbGetFriends    fGetFriends = []() {};
+
+        cbIsLoggedIn     fIsLoggedIn = []() {return false; };
+        cbGetUserID      fGetUserID = []() {return std::string(""); };
+        cbGetAccessToken fGetAccessToken = []() {return std::string(""); };
+        cbGetAppID       fGetAppID = []() {return std::string(""); };
+    }
+
+    using namespace internal;
+
 
     spEventDispatcher _dispatcher;
 
@@ -26,38 +41,58 @@ namespace facebook
 
     void init()
     {
+#ifdef __ANDROID__
+        fInit = jniFacebookInit;
+        fFree = jniFacebookFree;
+
+        fLogin = jniFacebookLogin;
+        fLogout = jniFacebookLogout;
+        fNewMeRequest = jniFacebookNewMeRequest;
+        fGetFriends = jniFacebookGetFriends;
+        fIsLoggedIn = jniFacebookIsLoggedIn;
+        fGetUserID = jniFacebookGetUserID;
+        fGetAccessToken = jniFacebookGetAccessToken;
+        fGetAppID = jniFacebookGetAppID;
+#elif TARGET_OS_IPHONE
+        fLogin = iosFacebookLogin;
+        fLogout = iosFacebookLogout;
+        fNewMeRequest = iosFacebookRequestMe;
+        fGetFriends = []() {OX_ASSERT(0); };
+        fIsLoggedIn = []() {OX_ASSERT(0); return false; };
+        fGetUserID = iosFacebookGetUserID;
+        fGetAccessToken = iosFacebookGetAccessToken;
+        fGetAppID = []() {OX_ASSERT(0); return std::string(""); };
+#else
+        fInit = facebookSimulatorInit;
+
+        fLogin = facebookSimulatorLogin;
+        fLogout = facebookSimulatorLogout;
+        fNewMeRequest = facebookSimulatorNewMeRequest;
+        fGetFriends = facebookSimulatorGetFriends;
+        fIsLoggedIn = facebookSimulatorIsLoggedIn;
+        fGetUserID = facebookSimulatorGetUserID;
+        fGetAccessToken = facebookSimulatorGetAccessToken;
+        fGetAppID = facebookSimulatorGetAppID;
+#endif
+
+
         log::messageln("facebook::init");
         OX_ASSERT(_dispatcher == 0);
         _dispatcher = new EventDispatcher;
 
+        fInit();
 
-#if !FB_EXT_ENABLED
-        return;
-#endif
-
-#ifdef __ANDROID__
-        jniFacebookInit();
-#elif TARGET_OS_IPHONE
-
-#else
-        facebookSimulatorInit();
-#endif
         log::messageln("facebook::init done");
     }
 
     void free()
     {
-#if !FB_EXT_ENABLED
-        return;
-#endif
-
         log::messageln("facebook::free");
 
         OX_ASSERT(_dispatcher);
 
-#ifdef __ANDROID__
-        jniFacebookFree();
-#endif
+        fFree();
+
         _dispatcher->removeAllEventListeners();
         _dispatcher = 0;
         log::messageln("facebook::free done");
@@ -65,43 +100,23 @@ namespace facebook
 
     void login()
     {
-#if !FB_EXT_ENABLED
-        return;
-#endif
         log::messageln("facebook::login");
 
-#ifdef __ANDROID__
-        jniFacebookLogin();
-#elif __APPLE__
-        iosFacebookLogin();
-#else
-        facebookSimulatorLogin();
-#endif
+        fLogin();
+
         log::messageln("facebook::login done");
     }
 
     void logout()
     {
-#if !FB_EXT_ENABLED
-        return;
-#endif
-        log::messageln("facebook::logout");
 
-#ifdef __ANDROID__
-        jniFacebookLogout();
-#elif __APPLE__
-        iosFacebookLogout();
-#else
-        facebookSimulatorLogout();
-#endif
+        log::messageln("facebook::logout");
+        fLogout();
         log::messageln("facebook::logout done");
     }
 
     bool appInviteDialog(const string& appLinkUrl, const string& previewImageUrl)
     {
-#if !FB_EXT_ENABLED
-        return false;
-#endif
         log::messageln("facebook::AppInviteDialog");
 
 #ifdef __ANDROID__
@@ -116,88 +131,37 @@ namespace facebook
 
     void newMeRequest()
     {
-#if !FB_EXT_ENABLED
-        return;
-#endif
-
         log::messageln("facebook::newMeRequest");
-
-#ifdef __ANDROID__
-        jniFacebookNewMeRequest();
-#elif TARGET_OS_IPHONE
-#else
-        facebookSimulatorNewMeRequest();
-#endif
+        fNewMeRequest();
         log::messageln("facebook::newMeRequest done");
     }
 
     void getFriends()
     {
-#if !FB_EXT_ENABLED
-        return;
-#endif
         log::messageln("facebook::getFriends");
-
-#ifdef __ANDROID__
-        jniFacebookGetFriends();
-#elif TARGET_OS_IPHONE
-#else
-        facebookSimulatorGetFriends();
-#endif
+        fGetFriends();
         log::messageln("facebook::getFriends done");
     }
 
     bool isLoggedIn()
     {
-#if !FB_EXT_ENABLED
-        return false;
-#endif
         log::messageln("facebook::isLoggined");
-
-#ifdef __ANDROID__
-        return jniFacebookIsLoggedIn();
-#elif TARGET_OS_IPHONE
-#else
-        return facebookSimulatorIsLoggedIn();
-#endif
-        return false;
+        return fIsLoggedIn();
     }
 
     string getAccessToken()
     {
-#if !FB_EXT_ENABLED
-        return "";
-#endif
         log::messageln("facebook::getAccessToken");
-        string token = "";
-
-#ifdef __ANDROID__
-        token = jniFacebookGetAccessToken();
-#elif TARGET_OS_IPHONE
-        token = iosFacebookGetAccessToken();
-#else
-        token = facebookSimulatorGetAccessToken();
-#endif
+        string token = fGetAccessToken();
         log::messageln("%s", token.c_str());
         return token;
     }
 
     string getUserID()
     {
-
-#if !FB_EXT_ENABLED
-        return "";
-#endif
         log::messageln("facebook::getUserID");
-        string id = "";
+        string id = fGetUserID();
 
-#ifdef __ANDROID__
-        id = jniFacebookGetUserID();
-#elif TARGET_OS_IPHONE
-        id = iosFacebookGetUserID();
-#else
-        id = facebookSimulatorGetUserID();
-#endif
         log::messageln("%s", id.c_str());
 
         return id;
@@ -205,25 +169,11 @@ namespace facebook
 
     string getAppID()
     {
-
-#if !FB_EXT_ENABLED
-        return "";
-#endif
-
-#ifdef __ANDROID__
-        return jniFacebookGetAppID();
-#elif TARGET_OS_IPHONE
-        return iosFacebookGetUserID();
-#else
-        return facebookSimulatorGetAppID();
-#endif
-        return "";
-
+        return fGetAppID();
     }
 
     namespace internal
     {
-
         void newToken(const string& value)
         {
             log::messageln("facebook::internal::newToken %s", value.c_str());
@@ -242,14 +192,6 @@ namespace facebook
                 _dispatcher->dispatchEvent(&ev);
         }
 
-
-        /*
-            {
-                "id":"1035749669829946",
-                "link" : "https:\/\/www.facebook.com\/app_scoped_user_id\/1035749669829946\/",
-                "name" : "Denis Sachkov"
-            }
-        */
         void newMeRequestResult(const string& data, bool error)
         {
             log::messageln("facebook::internal::newMeRequestResult %s", data.c_str());
@@ -267,7 +209,7 @@ namespace facebook
             else
             {
                 event.id = root["id"].asCString();
-                event.link = root["link"].asCString();
+                //event.link = root["link"].asCString();
                 event.name = root["name"].asCString();
             }
 
