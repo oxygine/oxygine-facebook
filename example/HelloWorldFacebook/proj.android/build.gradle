@@ -29,7 +29,7 @@ apply plugin: 'com.android.application'
 dependencies {
     compile(project(':oxygine-extension'))
     compile(project(':oxygine-lib')) { exclude module: 'oxygine-extension' }
-    compile 'com.facebook.android:facebook-android-sdk:4.22.1'
+    compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile(project(':oxygine-facebook')) {
         exclude module: "support-annotations"
         exclude module: "support-v4"
@@ -40,8 +40,8 @@ dependencies {
 android {
     enforceUniquePackageName=false
         
-    compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         minSdkVersion 16

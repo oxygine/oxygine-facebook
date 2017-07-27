@@ -61,6 +61,16 @@ extern "C"
             facebook::internal::newMyFriendsRequestResult(data, (bool) error);
         });
     }
+
+    JNIEXPORT void JNICALL Java_org_oxygine_facebook_FacebookAdapter_nativeGameRequest(JNIEnv* env, jobject obj, jstring jrequestID, jboolean error)
+    {
+        string requestID = jniGetString(env, jrequestID);
+
+        core::getMainThreadDispatcher().postCallback([ = ]()
+        {
+            facebook::internal::gameRequestResult(requestID, (bool) error);
+        });
+    }
 }
 
 
@@ -325,4 +335,35 @@ void jniFacebookLogout()
     {
         log::error("jniFacebookLogout failed, class/member not found");
     }
+}
+
+void jniFacebookGameRequest(const string &title, const string &text, const vector<string>& dest, const string &objectID, const std::string &userData)
+{
+    if (!isFacebookEnabled())
+        return;
+
+    JNIEnv* env = jniGetEnv();
+    LOCAL_REF_HOLDER(env);
+
+    jmethodID jfunc = env->GetMethodID(_jFacebookClass, "sendGameRequest", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+
+    jstring jTitle = 0; 
+    if (!title.empty())
+        jTitle = env->NewStringUTF(title.c_str());
+
+    jstring jText = 0;
+    if (!text.empty())
+        jText = env->NewStringUTF(text.c_str());
+
+    jstring jobjectID = 0;
+    if (!objectID.empty())
+        jobjectID = env->NewStringUTF(objectID.c_str());
+
+    jstring juserData = 0;
+    if (!userData.empty())
+        env->NewStringUTF(userData.c_str());
+
+    jobjectArray jdest = jniGetObjectStringArray(dest, env);
+
+    env->CallVoidMethod(_jFacebookObject, jfunc, jTitle, jText, jdest, jobjectID, juserData);
 }

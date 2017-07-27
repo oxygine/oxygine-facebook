@@ -56,6 +56,7 @@ namespace facebook
         fGetUserID = jniFacebookGetUserID;
         fGetAccessToken = jniFacebookGetAccessToken;
         fGetAppID = jniFacebookGetAppID;
+        fGameRequest = jniFacebookGameRequest;
 #elif TARGET_OS_IPHONE
         fInit = iosFacebookInit;
         fFree = iosFacebookFree;
@@ -145,7 +146,7 @@ namespace facebook
     void gameRequest()
     {
         vector<string> dest = {"1531304915"};
-        fGameRequest("Hello", "Text", dest, "1294318570680848", "");
+        fGameRequest("Hello", "Text", dest, "", "");
     }
 
     void getFriends()

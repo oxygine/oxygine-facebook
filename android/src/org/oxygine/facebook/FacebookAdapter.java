@@ -242,7 +242,7 @@ public class FacebookAdapter extends ActivityObserver
                     builder.setMessage(text);
 
                 if (title != null)
-                    builder.setTitle(text);
+                    builder.setTitle(title);
 
                 if (dest != null)
                 {
@@ -255,6 +255,8 @@ public class FacebookAdapter extends ActivityObserver
 
                 if (userData != null)
                     builder.setData(userData);
+
+                //builder.setActionType(GameRequestContent.ActionType.SEND);
 
                 requestDialog.show(builder.build());
             }
