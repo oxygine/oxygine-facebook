@@ -16,12 +16,15 @@ namespace facebook
 {
     namespace internal
     {
+        using namespace std;
+        
         cbInit          fInit = []() {};
         cbFree          fFree = []() {};
         cbLogin         fLogin = []() {};
         cbLogout        fLogout = []() {};
         cbNewMeRequest  fNewMeRequest = []() {};
         cbGetFriends    fGetFriends = []() {};
+        cbGameRequest   fGameRequest = [](const string &title, const string &text, const vector<string>& dest, const string &objectID, const std::string &userData){};
 
         cbIsLoggedIn     fIsLoggedIn = []() {return false; };
         cbGetUserID      fGetUserID = []() {return std::string(""); };
@@ -54,6 +57,8 @@ namespace facebook
         fGetAccessToken = jniFacebookGetAccessToken;
         fGetAppID = jniFacebookGetAppID;
 #elif TARGET_OS_IPHONE
+        fInit = iosFacebookInit;
+        fFree = iosFacebookFree;
         fLogin = iosFacebookLogin;
         fLogout = iosFacebookLogout;
         fNewMeRequest = iosFacebookRequestMe;
@@ -62,6 +67,7 @@ namespace facebook
         fGetUserID = iosFacebookGetUserID;
         fGetAccessToken = iosFacebookGetAccessToken;
         fGetAppID = []() {OX_ASSERT(0); return std::string(""); };
+        fGameRequest = iosFacebookGameRequest;
 #else
         fInit = facebookSimulatorInit;
 
@@ -134,6 +140,12 @@ namespace facebook
         log::messageln("facebook::newMeRequest");
         fNewMeRequest();
         log::messageln("facebook::newMeRequest done");
+    }
+    
+    void gameRequest()
+    {
+        vector<string> dest = {"1531304915"};
+        fGameRequest("Hello", "Text", dest, "1294318570680848", "");
     }
 
     void getFriends()
@@ -220,6 +232,14 @@ namespace facebook
         void newMyFriendsRequestResult(const string& data, bool error)
         {
             log::messageln("facebook::internal::newMyFriendsRequestResult %s", data.c_str());
+        }
+        
+        void gameRequestResult(const string &id, bool canceled)
+        {
+            log::messageln("facebook::internal::gameRequestResult %s", id.c_str());
+            GameRequestEvent ev(id, canceled);
+            if (_dispatcher)
+                _dispatcher->dispatchEvent(&ev);
         }
     }
 }

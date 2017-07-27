@@ -9,7 +9,70 @@
 #import <Foundation/Foundation.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
+#import <FBSDKShareKit/FBSDKShareKit.h>
 #include "facebook.h"
+
+
+
+
+@interface FacebookRequests:NSObject<FBSDKGameRequestDialogDelegate>
+{
+}
+@end
+
+@implementation FacebookRequests
+
+- (id)init
+{
+    if (!(self = [super init]))
+        return nil;
+    
+    return self;
+}
+
+
+#pragma mark - FBSDKGameRequestDialogDelegate
+
+
+/**
+ Sent to the delegate when the game request completes without error.
+ - Parameter gameRequestDialog: The FBSDKGameRequestDialog that completed.
+ - Parameter results: The results from the dialog.  This may be nil or empty.
+ */
+- (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog didCompleteWithResults:(NSDictionary *)results
+{
+    NSString *request = [results objectForKey:@"request"];
+    if (request)
+        facebook::internal::gameRequestResult([request UTF8String], false);
+    else
+        facebook::internal::gameRequestResult("", true);
+}
+
+/**
+ Sent to the delegate when the game request encounters an error.
+ - Parameter gameRequestDialog: The FBSDKGameRequestDialog that completed.
+ - Parameter error: The error.
+ */
+- (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog didFailWithError:(NSError *)error
+{
+    facebook::internal::gameRequestResult("", true);
+}
+
+/**
+ Sent to the delegate when the game request dialog is cancelled.
+ - Parameter gameRequestDialog: The FBSDKGameRequestDialog that completed.
+ */
+- (void)gameRequestDialogDidCancel:(FBSDKGameRequestDialog *)gameRequestDialog
+{
+    facebook::internal::gameRequestResult("", true);
+}
+#pragma mark -
+
+@end
+
+FacebookRequests* requests = 0;
+
+
 
 UIViewController * getViewcontrollerForFB(void)
 {
@@ -110,4 +173,42 @@ void iosFacebookRequestMe()
              }
          }];
     }
+}
+
+void iosFacebookInit()
+{
+    requests = [[FacebookRequests alloc] init];
+    
+}
+
+void iosFacebookFree()
+{
+    requests = Nil;
+}
+
+void iosFacebookGameRequest(const string &title, const string &text, const vector<string>& dest, const string &objectID, const std::string &userData)
+{
+    FBSDKGameRequestContent *request = [[FBSDKGameRequestContent alloc] init];
+    
+    request.message = [NSString stringWithUTF8String:text.c_str()];
+    request.title = [NSString stringWithUTF8String:title.c_str()];
+
+    //request.frictionlessRequestsEnabled = true;
+    //request.actionType = FBSDKGameRequestActionTypeSend;
+    request.data = [NSString stringWithUTF8String:userData.c_str()];
+
+    
+    //request.objectID = [NSString stringWithUTF8String:objectID.c_str()];
+
+
+    
+    NSMutableArray *rec = [NSMutableArray array];
+    for (const string &id:dest)
+    {
+        [rec addObject:[NSString stringWithUTF8String:id.c_str()] ];
+    }
+    request.recipients = rec;
+    
+    
+    [FBSDKGameRequestDialog showWithContent:request delegate:requests];
 }
