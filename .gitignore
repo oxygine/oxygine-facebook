@@ -10,3 +10,5 @@ example/HelloWorldFacebook/proj.android/.gradle/
 example/HelloWorldFacebook/proj.android/build/
 example/HelloWorldFacebook/proj.android/obj/
 example/HelloWorldFacebook/proj.android/libs/
+example/HelloWorldFacebook/proj.android/.idea/
+example/HelloWorldFacebook/proj.android/proj.android.iml

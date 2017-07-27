@@ -20,8 +20,10 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.share.model.AppInviteContent;
+import com.facebook.share.model.GameRequestContent;
 import com.facebook.share.widget.AppInviteDialog;
 
+import com.facebook.share.widget.GameRequestDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +32,11 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import android.util.Base64;
 
 public class FacebookAdapter extends ActivityObserver
@@ -43,11 +49,13 @@ public class FacebookAdapter extends ActivityObserver
     CallbackManager callbackManager;
     Activity activity;
     JSONObject userData;
+    GameRequestDialog requestDialog;
 
     public native void loginResult(boolean value);
     public native void newToken(String value);
     public native void newMyFriendsRequestResult(String data, boolean error);
     public native void newMeRequestResult(String data, boolean error);
+    public native void nativeGameRequest(String request, boolean error);
 
     public void logout()
     {
@@ -81,6 +89,22 @@ public class FacebookAdapter extends ActivityObserver
     public void onCreate()
     {
         printKeyHash();
+
+        requestDialog = new GameRequestDialog(_activity);
+        requestDialog.registerCallback(callbackManager,
+                new FacebookCallback<GameRequestDialog.Result>() {
+                    public void onSuccess(GameRequestDialog.Result result) {
+                        //String id = result.getId();
+                        nativeGameRequest(result.getRequestId(), false);
+                    }
+                    public void onCancel() {
+                        nativeGameRequest(null, true);
+                    }
+                    public void onError(FacebookException error) {
+                        nativeGameRequest(null, true);
+                    }
+                }
+        );
     }
 
     public FacebookAdapter(Activity a)
@@ -203,6 +227,38 @@ public class FacebookAdapter extends ActivityObserver
             return "";
         
         return accessToken.getUserId();
+    }
+
+    public void sendGameRequest(final String title, final String text, final String[] dest, final String objectID, final String userData)
+    {
+        _activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+
+                GameRequestContent.Builder builder = new GameRequestContent.Builder();
+
+                if (text != null)
+                    builder.setMessage(text);
+
+                if (title != null)
+                    builder.setTitle(text);
+
+                if (dest != null)
+                {
+                    List<String> rec = new ArrayList<>(Arrays.asList(dest));
+                    builder.setRecipients(rec);
+                }
+
+                if (objectID != null)
+                    builder.setObjectId(objectID);
+
+                if (userData != null)
+                    builder.setData(userData);
+
+                requestDialog.show(builder.build());
+            }
+        });
     }
 
     public String getAppID()
