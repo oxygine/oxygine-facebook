@@ -17,7 +17,7 @@ void iosFacebookFree();
 
 void iosFacebookLogin();
 void iosFacebookLogout();
-void iosFacebookGameRequest(const std::string &title, const std::string &text, const std::vector<std::string>& dest, const std::string &objectID, const std::string &userData);
+void iosFacebookGameRequest(const std::string& title, const std::string& text, const std::vector<std::string>& dest, const std::string& objectID, const std::string& userData);
 
 std::string iosFacebookGetAccessToken();
 std::string iosFacebookGetUserID();

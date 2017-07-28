@@ -60,13 +60,13 @@ namespace facebook
 
         string token;
     };
-    
+
     class GameRequestEvent: public Event
     {
     public:
         enum {EVENT = sysEventID('f', 'g', 'r')};
-        GameRequestEvent(const string &id, bool Canceled):Event(EVENT), requestID(id), canceled(Canceled){}
-        
+        GameRequestEvent(const string& id, bool Canceled): Event(EVENT), requestID(id), canceled(Canceled) {}
+
         string requestID;
         bool canceled;
     };
@@ -78,8 +78,8 @@ namespace facebook
     void logout();
     void getFriends();
     void newMeRequest();
-    void gameRequest();
-    
+    void gameRequest(const string& title, const string& text, const vector<string>& dest, const string& objectID, const string& userData);
+
     bool appInviteDialog(const string& appLinkUrl, const string& previewImageUrl);
 
     string getAccessToken();
@@ -93,7 +93,7 @@ namespace facebook
         typedef void(*cbLogin)();
         typedef void(*cbLogout)();
         typedef void(*cbNewMeRequest)();
-        typedef void(*cbGameRequest)(const string &title, const string &text, const vector<string>& dest, const string &objectID, const std::string &userData);
+        typedef void(*cbGameRequest)(const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData);
         typedef void(*cbGetFriends)();
 
         typedef bool(*cbIsLoggedIn)();
@@ -116,7 +116,7 @@ namespace facebook
         void loginResult(bool value);
         void newToken(const string& value);
         void newMyFriendsRequestResult(const string& data, bool error);
-        
+
         void gameRequestResult(const string& id, bool canceled);
     }
 };

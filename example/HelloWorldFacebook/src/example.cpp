@@ -33,7 +33,7 @@ public:
         {
             facebook::login();
         }
-        
+
         if (id == "token")
         {
             notify(facebook::getAccessToken());

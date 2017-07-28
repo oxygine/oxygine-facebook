@@ -337,7 +337,7 @@ void jniFacebookLogout()
     }
 }
 
-void jniFacebookGameRequest(const string &title, const string &text, const vector<string>& dest, const string &objectID, const std::string &userData)
+void jniFacebookGameRequest(const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData)
 {
     if (!isFacebookEnabled())
         return;
@@ -347,7 +347,7 @@ void jniFacebookGameRequest(const string &title, const string &text, const vecto
 
     jmethodID jfunc = env->GetMethodID(_jFacebookClass, "sendGameRequest", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 
-    jstring jTitle = 0; 
+    jstring jTitle = 0;
     if (!title.empty())
         jTitle = env->NewStringUTF(title.c_str());
 
