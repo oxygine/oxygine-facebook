@@ -251,6 +251,33 @@ bool facebookSimulatorAppInviteDialog(const string& appLinkUrl, const string& pr
     return false;
 }
 
+void facebookSimulatorGameRequest(const std::string& title, const std::string& text, const std::vector<std::string>& dest, const std::string& objectID, const std::string& userData)
+{
+    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([](Event*)
+    {
+        spFacebookDialog dialog = new FacebookDialog;
+        dialog->setScale(1.0f / getStage()->getScaleX());
+        dialog->setSize(500, 300);
+        getStage()->addChild(dialog);
+
+        dialog->_btnOk->addClickListener([=](Event * e)
+        {
+            dialog->detach();
+            e->removeListener();
+
+            facebook::internal::gameRequestResult("<fake>", false);
+        });
+
+        dialog->_btnCancel->addClickListener([=](Event * e)
+        {
+            dialog->detach();
+            e->removeListener();
+
+            facebook::internal::gameRequestResult("", true);
+        });
+    });
+}
+
 bool facebookSimulatorIsLoggedIn()
 {
     return _isLoggedIn;

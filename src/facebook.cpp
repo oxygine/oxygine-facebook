@@ -80,6 +80,7 @@ namespace facebook
         fGetUserID = facebookSimulatorGetUserID;
         fGetAccessToken = facebookSimulatorGetAccessToken;
         fGetAppID = facebookSimulatorGetAppID;
+        fGameRequest = facebookSimulatorGameRequest;
 #endif
 
 
