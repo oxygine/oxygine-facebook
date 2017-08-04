@@ -15,12 +15,14 @@ void iosFacebookInit();
 void iosFacebookFree();
 
 
-void iosFacebookLogin();
+void iosFacebookLogin(const std::vector<std::string> &permissions);
 void iosFacebookLogout();
 void iosFacebookGameRequest(const std::string& title, const std::string& text, const std::vector<std::string>& dest, const std::string& objectID, const std::string& userData);
 
 std::string iosFacebookGetAccessToken();
 std::string iosFacebookGetUserID();
 std::string iosFacebookGetAppID();
+std::vector<std::string> iosFacebookGetPermissions();
+
 void iosFacebookRequestMe();
 #endif /* Header_h */

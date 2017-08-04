@@ -20,7 +20,7 @@ namespace facebook
 
         cbInit          fInit = []() {};
         cbFree          fFree = []() {};
-        cbLogin         fLogin = []() {};
+        cbLogin         fLogin = [](const vector<string>& permissions) {};
         cbLogout        fLogout = []() {};
         cbNewMeRequest  fNewMeRequest = []() {};
         cbGetFriends    fGetFriends = []() {};
@@ -30,6 +30,7 @@ namespace facebook
         cbGetUserID      fGetUserID = []() {return std::string(""); };
         cbGetAccessToken fGetAccessToken = []() {return std::string(""); };
         cbGetAppID       fGetAppID = []() {return std::string(""); };
+        cbGetAccessTokenPermissions fGetAccessTokenPermissions = [](){return std::vector<string>();};
     }
 
     using namespace internal;
@@ -69,6 +70,7 @@ namespace facebook
         fGetAccessToken = iosFacebookGetAccessToken;
         fGetAppID = []() {OX_ASSERT(0); return std::string(""); };
         fGameRequest = iosFacebookGameRequest;
+        fGetAccessTokenPermissions = iosFacebookGetPermissions;
 #else
         fInit = facebookSimulatorInit;
 
@@ -106,11 +108,11 @@ namespace facebook
         log::messageln("facebook::free done");
     }
 
-    void login()
+    void login(const vector<string>& permissions)
     {
         log::messageln("facebook::login");
 
-        fLogin();
+        fLogin(permissions);
 
         log::messageln("facebook::login done");
     }
@@ -168,6 +170,19 @@ namespace facebook
         string token = fGetAccessToken();
         log::messageln("%s", token.c_str());
         return token;
+    }
+    
+    vector<string> getAccessTokenPermissions()
+    {
+        log::messageln("facebook::getAccessToken");
+        vector<string> res = fGetAccessTokenPermissions();
+        string str;
+        for (const auto& s:res)
+            str += s + ",";
+        str.pop_back();
+        log::messageln("permissions: %s", str.c_str());
+        
+        return res;
     }
 
     string getUserID()

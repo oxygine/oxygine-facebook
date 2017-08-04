@@ -74,7 +74,7 @@ namespace facebook
     spEventDispatcher dispatcher();
 
     bool isLoggedIn();
-    void login();
+    void login(const vector<string>& permissions);
     void logout();
     void getFriends();
     void newMeRequest();
@@ -85,12 +85,13 @@ namespace facebook
     string getAccessToken();
     string getUserID();
     string getAppID();
+    vector<string> getAccessTokenPermissions();
 
     namespace internal
     {
         typedef void(*cbInit)();
         typedef void(*cbFree)();
-        typedef void(*cbLogin)();
+        typedef void(*cbLogin)(const vector<string>& permissions);
         typedef void(*cbLogout)();
         typedef void(*cbNewMeRequest)();
         typedef void(*cbGameRequest)(const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData);
@@ -100,6 +101,8 @@ namespace facebook
         typedef std::string(*cbGetUserID)();
         typedef std::string(*cbGetAccessToken)();
         typedef std::string(*cbGetAppID)();
+        
+        typedef std::vector<std::string>(*cbGetAccessTokenPermissions)();
 
         extern cbInit          fInit;
         extern cbFree          fFree;
@@ -111,6 +114,7 @@ namespace facebook
         extern cbGetUserID           fGetUserID;
         extern cbGetAccessToken fGetAccessToken;
         extern cbGetAppID             fGetAppID;
+        extern cbGetAccessTokenPermissions fGetAccessTokenPermissions;
 
         void newMeRequestResult(const string& data, bool error);
         void loginResult(bool value);

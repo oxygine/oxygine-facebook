@@ -96,11 +96,21 @@ UIViewController * getViewcontrollerForFB(void)
     return nullptr;
 }
 
-void iosFacebookLogin()
+void iosFacebookLogin(const vector<string> &permissions)
 {
+    //FBSDKAccessToken *t = [FBSDKAccessToken currentAccessToken];
+    
+    NSMutableArray *perm = [NSMutableArray array];
+    
+    for (const string &item:permissions)
+    {
+        [perm addObject:[NSString stringWithUTF8String:item.c_str()]];
+    }
+    
+    
     FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
     [login
-     logInWithReadPermissions:@[@"public_profile"]
+     logInWithReadPermissions:perm
      fromViewController:nil
      handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
          
@@ -138,6 +148,22 @@ std::string iosFacebookGetUserID()
 std::string iosFacebookGetAppID()
 {
     return [[FBSDKSettings appID] UTF8String];
+}
+
+std::vector<std::string> iosFacebookGetPermissions()
+{
+    std::vector<std::string> permissions;
+    
+    FBSDKAccessToken *token = [FBSDKAccessToken currentAccessToken];
+    if (token)
+    {
+        NSArray* perm = [[token permissions] allObjects];
+        for (int i = 0; i < [perm count]; ++i)
+            permissions.push_back([[perm objectAtIndex: i] UTF8String]);
+        //return [[FBSDKAccessToken currentAccessToken].userID UTF8String];
+    }
+    
+    return permissions;
 }
 
 void iosFacebookRequestMe()
