@@ -32,10 +32,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import android.util.Base64;
 
@@ -44,7 +41,7 @@ public class FacebookAdapter extends ActivityObserver
     private static String TAG = "FacebookAdapter";
 
     ProfileTracker profileTracker;
-    AccessToken accessToken;
+    //AccessToken accessToken;
     AccessTokenTracker accessTokenTracker;
     CallbackManager callbackManager;
     Activity activity;
@@ -64,10 +61,10 @@ public class FacebookAdapter extends ActivityObserver
         LoginManager.getInstance().logOut();
     }
 
-    public void login()
+    public void login(String[] permissions)
     {
         Log.i(TAG, "login");
-        LoginManager.getInstance().logInWithReadPermissions(activity, Arrays.asList("public_profile", "user_friends"));
+        LoginManager.getInstance().logInWithReadPermissions(activity, Arrays.asList(permissions));
     }
 
     public void printKeyHash()
@@ -121,7 +118,7 @@ public class FacebookAdapter extends ActivityObserver
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.i(TAG, "Login::onSuccess");
-                        accessToken = loginResult.getAccessToken();
+                        //accessToken = loginResult.getAccessToken();
                         loginResult(true);
                     }
 
@@ -146,30 +143,16 @@ public class FacebookAdapter extends ActivityObserver
                     AccessToken currentAccessToken) {
                 // Set the access token using
                 // currentAccessToken when it's loaded or set.
-                accessToken = currentAccessToken;
-                if (accessToken != null)
-                	newToken(accessToken.getToken());
+                //accessToken = currentAccessToken;
+                if (currentAccessToken != null)
+                	newToken(currentAccessToken.getToken());
             }
         };
-        // If the access token is available already assign it.
-        accessToken = AccessToken.getCurrentAccessToken();
-
-/*
-        profileTracker = new ProfileTracker() {
-            @Override
-            protected void onCurrentProfileChanged(
-                    Profile oldProfile,
-                    Profile currentProfile) {
-                // App code
-            }
-        };*/
-
-
     }
 
     public void newMyFriendsRequest() {
         Log.i(TAG, "newMyFriendsRequest");
-        GraphRequest request = GraphRequest.newMyFriendsRequest(accessToken, new GraphRequest.GraphJSONArrayCallback() {
+        GraphRequest request = GraphRequest.newMyFriendsRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONArrayCallback() {
             @Override
             public void onCompleted(JSONArray objects, GraphResponse response) {
                 Log.i(TAG, "newMyFriendsRequest:onCompleted " + objects.toString());
@@ -200,7 +183,7 @@ public class FacebookAdapter extends ActivityObserver
     public void newMeRequest() {
         Log.i(TAG, "newMeRequest");
         GraphRequest request = GraphRequest.newMeRequest(
-                accessToken,
+                AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
@@ -223,10 +206,10 @@ public class FacebookAdapter extends ActivityObserver
 
     public String getUserID()
     {
-        if (accessToken == null)
+        if (AccessToken.getCurrentAccessToken() == null)
             return "";
         
-        return accessToken.getUserId();
+        return AccessToken.getCurrentAccessToken().getUserId();
     }
 
     public void sendGameRequest(final String title, final String text, final String[] dest, final String objectID, final String userData)
@@ -270,17 +253,29 @@ public class FacebookAdapter extends ActivityObserver
 
     public String getAccessToken()
     {
-        if (accessToken == null)
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        if (token == null)
             return "";
 
-        if (accessToken.isExpired())
+        if (token.isExpired())
         {
-            Log.i(TAG, "getAccessToken::expired " + accessToken.getToken());
+            Log.i(TAG, "getAccessToken::expired " + token.getToken());
             return "";
         }
 
-        return accessToken.getToken();
+        return token.getToken();
     }
+
+    public String[] getAccessTokenPermissions()
+    {
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        if (token == null)
+            return null;
+
+        Set<String> perm = token.getPermissions();
+        return perm.toArray(new String[perm.size()]);
+    }
+
 
     public boolean isLoggedIn() {
         Log.i(TAG, "isLoggedIn");
@@ -303,13 +298,10 @@ public class FacebookAdapter extends ActivityObserver
 
     @Override
     public void onResume() {
-        // Logs 'install' and 'app activate' App Events.
-        AppEventsLogger.activateApp(activity);
+
     }
 
     @Override
     public void onPause() {
-        // Logs 'app deactivate' App Event.
-        AppEventsLogger.deactivateApp(activity);
     }
 }

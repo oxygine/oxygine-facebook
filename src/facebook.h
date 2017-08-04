@@ -101,7 +101,7 @@ namespace facebook
         typedef std::string(*cbGetUserID)();
         typedef std::string(*cbGetAccessToken)();
         typedef std::string(*cbGetAppID)();
-        
+
         typedef std::vector<std::string>(*cbGetAccessTokenPermissions)();
 
         extern cbInit          fInit;

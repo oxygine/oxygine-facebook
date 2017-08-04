@@ -30,7 +30,7 @@ namespace facebook
         cbGetUserID      fGetUserID = []() {return std::string(""); };
         cbGetAccessToken fGetAccessToken = []() {return std::string(""); };
         cbGetAppID       fGetAppID = []() {return std::string(""); };
-        cbGetAccessTokenPermissions fGetAccessTokenPermissions = [](){return std::vector<string>();};
+        cbGetAccessTokenPermissions fGetAccessTokenPermissions = []() {return std::vector<string>();};
     }
 
     using namespace internal;
@@ -58,6 +58,7 @@ namespace facebook
         fGetAccessToken = jniFacebookGetAccessToken;
         fGetAppID = jniFacebookGetAppID;
         fGameRequest = jniFacebookGameRequest;
+        fGetAccessTokenPermissions = jniFacebookGetAccessTokenPermissions;
 #elif TARGET_OS_IPHONE
         fInit = iosFacebookInit;
         fFree = iosFacebookFree;
@@ -171,17 +172,17 @@ namespace facebook
         log::messageln("%s", token.c_str());
         return token;
     }
-    
+
     vector<string> getAccessTokenPermissions()
     {
         log::messageln("facebook::getAccessToken");
         vector<string> res = fGetAccessTokenPermissions();
         string str;
-        for (const auto& s:res)
+        for (const auto& s : res)
             str += s + ",";
         str.pop_back();
         log::messageln("permissions: %s", str.c_str());
-        
+
         return res;
     }
 

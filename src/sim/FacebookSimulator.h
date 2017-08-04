@@ -5,7 +5,7 @@ using namespace std;
 
 
 void facebookSimulatorInit();
-void facebookSimulatorLogin();
+void facebookSimulatorLogin(const vector<string>&);
 void facebookSimulatorLogout();
 void facebookSimulatorGetFriends();
 bool facebookSimulatorIsLoggedIn();

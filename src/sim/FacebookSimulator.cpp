@@ -138,7 +138,7 @@ public:
 
 
 
-void facebookSimulatorLogin()
+void facebookSimulatorLogin(const vector<string>&)
 {
     getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([](Event*)
     {
@@ -260,7 +260,7 @@ void facebookSimulatorGameRequest(const std::string& title, const std::string& t
         dialog->setSize(500, 300);
         getStage()->addChild(dialog);
 
-        dialog->_btnOk->addClickListener([=](Event * e)
+        dialog->_btnOk->addClickListener([ = ](Event * e)
         {
             dialog->detach();
             e->removeListener();
@@ -268,7 +268,7 @@ void facebookSimulatorGameRequest(const std::string& title, const std::string& t
             facebook::internal::gameRequestResult("<fake>", false);
         });
 
-        dialog->_btnCancel->addClickListener([=](Event * e)
+        dialog->_btnCancel->addClickListener([ = ](Event * e)
         {
             dialog->detach();
             e->removeListener();
