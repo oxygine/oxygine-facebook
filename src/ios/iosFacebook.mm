@@ -180,7 +180,7 @@ void invFriendsRequest(NSDictionary *params)
         
         if (error)
         {
-            ev.page = -2;
+            ev.status = -2;
             
             facebook::dispatcher()->dispatchEvent(&ev);
             
@@ -197,12 +197,21 @@ void invFriendsRequest(NSDictionary *params)
     
         ev.data = [jsonString UTF8String];
         
+        
         // Handle the result
-        NSDictionary *paramsOfNextPage = [FBSDKUtility dictionaryWithQueryString:result[@"paging"][@"next"]];
-        if (paramsOfNextPage)
-            invFriendsRequest(paramsOfNextPage);
+        NSString* next  = result[@"paging"][@"cursors"][@"after"];
+        //NSString* next = [t objectForKey:@"after"];
+        if (next)
+        {
+            NSDictionary *params = @{@"fields":@"id,name,picture", @"after":next};
+            invFriendsRequest(params);
+            ev.status = 0;
+        }
         else
-            ev.page = -1;
+            ev.status = -1;
+        
+        
+        facebook::dispatcher()->dispatchEvent(&ev);
 
     }];
 }
