@@ -166,6 +166,52 @@ std::vector<std::string> iosFacebookGetPermissions()
     return permissions;
 }
 
+void invFriendsRequest(NSDictionary *params)
+{
+    FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc]
+                                  initWithGraphPath:@"/me/invitable_friends"
+                                  parameters:params
+                                  HTTPMethod:@"GET"];
+    [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection,
+                                          id result,
+                                          NSError *error) {
+        
+        facebook::InvitableFriendsEvent ev;
+        
+        if (error)
+        {
+            ev.page = -2;
+            
+            facebook::dispatcher()->dispatchEvent(&ev);
+            
+            return;
+        }
+        
+        
+        NSError *error2;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:result
+                                                           options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+                                                             error:&error2];
+
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+        ev.data = [jsonString UTF8String];
+        
+        // Handle the result
+        NSDictionary *paramsOfNextPage = [FBSDKUtility dictionaryWithQueryString:result[@"paging"][@"next"]];
+        if (paramsOfNextPage)
+            invFriendsRequest(paramsOfNextPage);
+        else
+            ev.page = -1;
+
+    }];
+}
+
+void iosFacebookRequestInvitableFriends()
+{
+    invFriendsRequest(@{@"fields":@"id,name,picture"});
+}
+
 void iosFacebookRequestMe()
 {
     if ([FBSDKAccessToken currentAccessToken])

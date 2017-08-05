@@ -51,6 +51,25 @@ namespace facebook
         bool error = false;
 
     };
+    
+    class InvitableFriendsEvent: public Event
+    {
+    public:
+        enum {EVENT = sysEventID('f', 'I', 'F')};
+        
+        InvitableFriendsEvent():Event(EVENT), page(-1){}
+        struct Friend
+        {
+            string id;
+            string name;
+            string url;
+        };
+        
+        //vector<Friend> friends;
+        string data;
+        int page;//-1=end, -2=error
+        
+    };
 
     class TokenEvent : public Event
     {
@@ -79,7 +98,9 @@ namespace facebook
     void getFriends();
     void newMeRequest();
     void gameRequest(const string& title, const string& text, const vector<string>& dest, const string& objectID, const string& userData);
+    void requestInvitableFriends();
 
+    
     bool appInviteDialog(const string& appLinkUrl, const string& previewImageUrl);
 
     string getAccessToken();
@@ -96,6 +117,8 @@ namespace facebook
         typedef void(*cbNewMeRequest)();
         typedef void(*cbGameRequest)(const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData);
         typedef void(*cbGetFriends)();
+        
+        typedef void(*cbRequestInvitableFriends)();
 
         typedef bool(*cbIsLoggedIn)();
         typedef std::string(*cbGetUserID)();
@@ -110,6 +133,7 @@ namespace facebook
         extern cbLogout        fLogout;
         extern cbNewMeRequest     fNewMeRequest;
         extern cbGetFriends         fGetFriends;
+        extern cbRequestInvitableFriends fRequestInvitableFriends;
         extern cbIsLoggedIn         fIsLoggedIn;
         extern cbGetUserID           fGetUserID;
         extern cbGetAccessToken fGetAccessToken;
@@ -122,5 +146,6 @@ namespace facebook
         void newMyFriendsRequestResult(const string& data, bool error);
 
         void gameRequestResult(const string& id, bool canceled);
+        //void resultInvitableFriends(int page, vector<);
     }
 };

@@ -25,6 +25,8 @@ namespace facebook
         cbNewMeRequest  fNewMeRequest = []() {};
         cbGetFriends    fGetFriends = []() {};
         cbGameRequest   fGameRequest = [](const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData) {};
+        
+        cbRequestInvitableFriends fRequestInvitableFriends = [](){};
 
         cbIsLoggedIn     fIsLoggedIn = []() {return false; };
         cbGetUserID      fGetUserID = []() {return std::string(""); };
@@ -72,6 +74,7 @@ namespace facebook
         fGetAppID = []() {OX_ASSERT(0); return std::string(""); };
         fGameRequest = iosFacebookGameRequest;
         fGetAccessTokenPermissions = iosFacebookGetPermissions;
+        fRequestInvitableFriends = iosFacebookRequestInvitableFriends;
 #else
         fInit = facebookSimulatorInit;
 
@@ -152,6 +155,12 @@ namespace facebook
         fGameRequest(title, text, dest, objectID, userData);
     }
 
+    void requestInvitableFriends()
+    {
+        log::messageln("facebook::requestInvitableFriends");
+        fRequestInvitableFriends();
+    }
+    
     void getFriends()
     {
         log::messageln("facebook::getFriends");
