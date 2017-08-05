@@ -68,7 +68,20 @@ extern "C"
 
         core::getMainThreadDispatcher().postCallback([ = ]()
         {
-            facebook::internal::gameRequestResult(requestID, (bool) error);
+            facebook::internal::gameRequestResult(requestID, (bool)error);
+        });
+    }
+
+    JNIEXPORT void JNICALL Java_org_oxygine_facebook_FacebookAdapter_nativeResponseInvitableFriends(JNIEnv* env, jobject obj, jstring jdata, int page)
+    {
+        string data = jniGetString(env, jdata);
+
+        core::getMainThreadDispatcher().postCallback([ = ]()
+        {
+            facebook::InvitableFriendsEvent ev;
+            ev.data = data;
+            ev.status = page;
+            facebook::internal::dispatch(&ev);
         });
     }
 }
@@ -306,4 +319,17 @@ void jniFacebookGameRequest(const string& title, const string& text, const vecto
     jobjectArray jdest = jniGetObjectStringArray(dest, env);
 
     env->CallVoidMethod(_jFacebookObject, jfunc, jTitle, jText, jdest, jobjectID, juserData);
+}
+
+void jniFacebookRequestInvitableFriends()
+{
+    if (!isFacebookEnabled())
+        return;
+
+    JNIEnv* env = jniGetEnv();
+    LOCAL_REF_HOLDER(env);
+
+    jmethodID jFn = env->GetMethodID(_jFacebookClass, "requestInvitableFriends", "()V");
+    JNI_NOT_NULL(jFn);
+    env->CallVoidMethod(_jFacebookObject, jFn);
 }

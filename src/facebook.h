@@ -51,24 +51,24 @@ namespace facebook
         bool error = false;
 
     };
-    
+
     class InvitableFriendsEvent: public Event
     {
     public:
         enum {EVENT = sysEventID('f', 'I', 'F')};
-        
-        InvitableFriendsEvent():Event(EVENT), page(-1){}
+
+        InvitableFriendsEvent(): Event(EVENT), status(-1) {}
         struct Friend
         {
             string id;
             string name;
             string url;
         };
-        
+
         //vector<Friend> friends;
         string data;
-        int page;//-1=end, -2=error
-        
+        int status;//ok = 0; end = -1, error = -2
+
     };
 
     class TokenEvent : public Event
@@ -100,7 +100,7 @@ namespace facebook
     void gameRequest(const string& title, const string& text, const vector<string>& dest, const string& objectID, const string& userData);
     void requestInvitableFriends();
 
-    
+
     bool appInviteDialog(const string& appLinkUrl, const string& previewImageUrl);
 
     string getAccessToken();
@@ -117,7 +117,7 @@ namespace facebook
         typedef void(*cbNewMeRequest)();
         typedef void(*cbGameRequest)(const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData);
         typedef void(*cbGetFriends)();
-        
+
         typedef void(*cbRequestInvitableFriends)();
 
         typedef bool(*cbIsLoggedIn)();
@@ -147,5 +147,7 @@ namespace facebook
 
         void gameRequestResult(const string& id, bool canceled);
         //void resultInvitableFriends(int page, vector<);
+
+        void dispatch(Event*);
     }
 };

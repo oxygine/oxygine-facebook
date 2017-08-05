@@ -5,17 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookRequestError;
-import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.Profile;
-import com.facebook.ProfileTracker;
+import com.facebook.*;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -53,6 +43,7 @@ public class FacebookAdapter extends ActivityObserver
     public native void newMyFriendsRequestResult(String data, boolean error);
     public native void newMeRequestResult(String data, boolean error);
     public native void nativeGameRequest(String request, boolean error);
+    public native void nativeResponseInvitableFriends(String data, int page);
 
     public void logout()
     {
@@ -274,6 +265,60 @@ public class FacebookAdapter extends ActivityObserver
 
         Set<String> perm = token.getPermissions();
         return perm.toArray(new String[perm.size()]);
+    }
+
+    public void _requestInvitableFriends2(GraphRequest r)
+    {
+        r.setCallback(new GraphRequest.Callback() {
+            public void onCompleted(GraphResponse response) {
+
+
+                if (response.getError() != null){
+                    nativeResponseInvitableFriends(response.getRawResponse(), -2);
+                    return;
+                }
+
+                GraphRequest next = response.getRequestForPagedResults(GraphResponse.PagingDirection.NEXT);
+                int page = 0;
+                if (next != null) {
+
+                    page = -1;
+                    _requestInvitableFriends2(next);
+                }
+
+
+                try {
+                    String obj = response.getJSONObject().getJSONObject("paging").getString("next");
+                    Log.d("a", "ad");
+                } catch (JSONException exc){
+                    Log.d("a", "adasd");
+                }
+
+
+            nativeResponseInvitableFriends(response.getRawResponse(), page);
+        }});
+
+        r.executeAsync();
+    }
+
+    public void _requestInvitableFriends(Bundle params)
+    {
+        if (params == null)
+            params = new Bundle();
+        params.putString("fields", "id,name,picture");
+
+        GraphRequest r = new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/me/invitable_friends",
+                params,
+                HttpMethod.GET);
+
+        _requestInvitableFriends2(r);
+    }
+
+    public void requestInvitableFriends()
+    {
+        _requestInvitableFriends(null);
     }
 
 

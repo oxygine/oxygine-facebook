@@ -25,8 +25,8 @@ namespace facebook
         cbNewMeRequest  fNewMeRequest = []() {};
         cbGetFriends    fGetFriends = []() {};
         cbGameRequest   fGameRequest = [](const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData) {};
-        
-        cbRequestInvitableFriends fRequestInvitableFriends = [](){};
+
+        cbRequestInvitableFriends fRequestInvitableFriends = []() {};
 
         cbIsLoggedIn     fIsLoggedIn = []() {return false; };
         cbGetUserID      fGetUserID = []() {return std::string(""); };
@@ -61,6 +61,7 @@ namespace facebook
         fGetAppID = jniFacebookGetAppID;
         fGameRequest = jniFacebookGameRequest;
         fGetAccessTokenPermissions = jniFacebookGetAccessTokenPermissions;
+        fRequestInvitableFriends = jniFacebookRequestInvitableFriends;
 #elif TARGET_OS_IPHONE
         fInit = iosFacebookInit;
         fFree = iosFacebookFree;
@@ -87,6 +88,8 @@ namespace facebook
         fGetAccessToken = facebookSimulatorGetAccessToken;
         fGetAppID = facebookSimulatorGetAppID;
         fGameRequest = facebookSimulatorGameRequest;
+        fGetAccessTokenPermissions = facebookSimulatorGetAccessTokenPermissions;
+        fRequestInvitableFriends = facebookSimulatorInvitableFriendsRequest;
 #endif
 
 
@@ -160,7 +163,7 @@ namespace facebook
         log::messageln("facebook::requestInvitableFriends");
         fRequestInvitableFriends();
     }
-    
+
     void getFriends()
     {
         log::messageln("facebook::getFriends");
@@ -189,7 +192,8 @@ namespace facebook
         string str;
         for (const auto& s : res)
             str += s + ",";
-        str.pop_back();
+        if (!str.empty())
+            str.pop_back();
         log::messageln("permissions: %s", str.c_str());
 
         return res;
@@ -266,6 +270,12 @@ namespace facebook
             GameRequestEvent ev(id, canceled);
             if (_dispatcher)
                 _dispatcher->dispatchEvent(&ev);
+        }
+
+        void dispatch(Event* ev)
+        {
+            if (_dispatcher)
+                _dispatcher->dispatchEvent(ev);
         }
     }
 }
