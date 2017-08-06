@@ -250,9 +250,7 @@ namespace facebook
             }
             else
             {
-                event.id = root["id"].asCString();
-                //event.link = root["link"].asCString();
-                event.name = root["name"].asCString();
+                event.data = data;
             }
 
             if (_dispatcher)

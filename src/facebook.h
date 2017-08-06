@@ -21,9 +21,8 @@ namespace facebook
         enum { EVENT = sysEventID('f', 'b', 'n') };
         NewMeRequestEvent() : Event(EVENT) {}
 
-        string id;
-        //string link;
-        string name;
+        string data;
+
         bool error = false;
     };
 
