@@ -279,10 +279,9 @@ public class FacebookAdapter extends ActivityObserver
                 }
 
                 GraphRequest next = response.getRequestForPagedResults(GraphResponse.PagingDirection.NEXT);
-                int page = 0;
+                int page = -1;
                 if (next != null) {
-
-                    page = -1;
+                    page = 0;
                     _requestInvitableFriends2(next);
                 }
 
