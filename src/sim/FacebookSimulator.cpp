@@ -147,10 +147,12 @@ void facebookSimulatorLogin(const vector<string>&)
         dialog->setSize(500, 300);
         getStage()->addChild(dialog);
 
+        FacebookDialog *ptr = dialog.get();
+
         dialog->_btnOk->addClickListener([ = ](Event * e)
         {
 
-            dialog->detach();
+            ptr->detach();
             e->removeListener();
 
             _isLoggedIn = true;
@@ -163,7 +165,7 @@ void facebookSimulatorLogin(const vector<string>&)
 
         dialog->_btnCancel->addClickListener([ = ](Event * e)
         {
-            dialog->detach();
+            ptr->detach();
             e->removeListener();
 
             facebook::internal::loginResult(false);
@@ -234,6 +236,11 @@ void facebookSimulatorInit()
 #endif
 }
 
+void facebookSimulatorFree()
+{
+
+}
+
 void facebookSimulatorNewMeRequest()
 {
     string data = "{\"id\":\"YOUR_FACEBOOK_ID\",\"link\" : \"https://www.facebook.com/app_scoped_user_id/YOUR_FACEBOOK_ID/\",\"name\" : \"YOUR NAME\"}";
@@ -260,9 +267,11 @@ void facebookSimulatorGameRequest(const std::string& title, const std::string& t
         dialog->setSize(500, 300);
         getStage()->addChild(dialog);
 
+        FacebookDialog *ptr = dialog.get();
+
         dialog->_btnOk->addClickListener([ = ](Event * e)
         {
-            dialog->detach();
+            ptr->detach();
             e->removeListener();
 
             facebook::internal::gameRequestResult("<fake>", false);
@@ -270,7 +279,7 @@ void facebookSimulatorGameRequest(const std::string& title, const std::string& t
 
         dialog->_btnCancel->addClickListener([ = ](Event * e)
         {
-            dialog->detach();
+            ptr->detach();
             e->removeListener();
 
             facebook::internal::gameRequestResult("", true);

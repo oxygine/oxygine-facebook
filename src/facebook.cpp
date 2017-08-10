@@ -78,7 +78,7 @@ namespace facebook
         fRequestInvitableFriends = iosFacebookRequestInvitableFriends;
 #else
         fInit = facebookSimulatorInit;
-
+        fFree = facebookSimulatorFree;
         fLogin = facebookSimulatorLogin;
         fLogout = facebookSimulatorLogout;
         fNewMeRequest = facebookSimulatorNewMeRequest;
