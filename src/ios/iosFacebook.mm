@@ -274,7 +274,7 @@ void iosFacebookGameRequest(const string &title, const string &text, const vecto
     request.message = [NSString stringWithUTF8String:text.c_str()];
     request.title = [NSString stringWithUTF8String:title.c_str()];
 
-    //request.frictionlessRequestsEnabled = true;
+    
     //request.actionType = FBSDKGameRequestActionTypeSend;
     request.data = [NSString stringWithUTF8String:userData.c_str()];
 
@@ -291,5 +291,10 @@ void iosFacebookGameRequest(const string &title, const string &text, const vecto
     request.recipients = rec;
     
     
-    [FBSDKGameRequestDialog showWithContent:request delegate:requests];
+    FBSDKGameRequestDialog *dialog = [[FBSDKGameRequestDialog alloc] init];
+    dialog.content = request;
+    dialog.frictionlessRequestsEnabled = true;
+    dialog.delegate = requests;
+    
+    [dialog show];
 }
