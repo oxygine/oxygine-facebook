@@ -42,6 +42,8 @@ public:
 
         addEventListener(TouchEvent::OVER, CLOSURE(this, &Btn::touch));
         addEventListener(TouchEvent::OUT, CLOSURE(this, &Btn::touch));
+
+        setSize(70, 30);
     }
 
     void setText(const string& txt)
@@ -94,12 +96,10 @@ public:
         addChild(_title);
 
         _btnOk = new Btn();
-        _btnOk->setSize(70, 30);
         _btnOk->setText("Ok");
         addChild(_btnOk);
 
         _btnCancel = new Btn();
-        _btnCancel->setSize(70, 30);
         _btnCancel->setText("Cancel");
         addChild(_btnCancel);
     }
@@ -136,7 +136,26 @@ public:
     spBtn               _btnCancel;
 };
 
+spBtn _btnLike;
+void facebookSimulatorShowLike(const string &url)
+{
+    _btnLike = new Btn;
+    _btnLike->setText("LIKE");
+    _btnLike->setAnchor(0.5f, 0.5f);
+    _btnLike->attachTo(getStage());
+    _btnLike->setPriority(31000);
+}
 
+void facebookSimulatorHideLike()
+{
+    _btnLike->detach();
+    _btnLike = 0;
+}
+
+void facebookSimulatorLikeUpdate(float x, float y)
+{
+    _btnLike->setPosition(x, y);
+}
 
 void facebookSimulatorLogin(const vector<string>&)
 {
@@ -238,7 +257,7 @@ void facebookSimulatorInit()
 
 void facebookSimulatorFree()
 {
-
+    _btnLike = 0;
 }
 
 void facebookSimulatorNewMeRequest()

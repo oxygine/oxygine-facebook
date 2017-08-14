@@ -20,3 +20,8 @@ vector<string> facebookSimulatorGetAccessTokenPermissions();
 std::string facebookSimulatorGetAccessToken();
 std::string facebookSimulatorGetUserID();
 std::string facebookSimulatorGetAppID();
+
+
+void facebookSimulatorShowLike(const string &url);
+void facebookSimulatorHideLike();
+void facebookSimulatorLikeUpdate(float x, float y);
