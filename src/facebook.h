@@ -97,7 +97,7 @@ namespace facebook
     void getFriends();
     void newMeRequest();
     void gameRequest(const string& title, const string& text, const vector<string>& dest, const string& objectID, const string& userData);
-    void requestInvitableFriends();
+    void requestInvitableFriends(const vector<string> &exclude);
 
 
     bool appInviteDialog(const string& appLinkUrl, const string& previewImageUrl);
@@ -117,7 +117,7 @@ namespace facebook
         typedef void(*cbGameRequest)(const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData);
         typedef void(*cbGetFriends)();
 
-        typedef void(*cbRequestInvitableFriends)();
+        typedef void(*cbRequestInvitableFriends)(const vector<string>&);
 
         typedef bool(*cbIsLoggedIn)();
         typedef std::string(*cbGetUserID)();

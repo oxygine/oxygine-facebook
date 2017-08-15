@@ -23,6 +23,6 @@ std::string iosFacebookGetAccessToken();
 std::string iosFacebookGetUserID();
 std::string iosFacebookGetAppID();
 std::vector<std::string> iosFacebookGetPermissions();
-void iosFacebookRequestInvitableFriends();
+void iosFacebookRequestInvitableFriends(const std::vector<std::string> &);
 void iosFacebookRequestMe();
 #endif /* Header_h */

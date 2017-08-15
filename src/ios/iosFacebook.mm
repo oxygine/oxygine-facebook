@@ -216,7 +216,7 @@ void invFriendsRequest(NSDictionary *params)
     }];
 }
 
-void iosFacebookRequestInvitableFriends()
+void iosFacebookRequestInvitableFriends(const vector<string> &)
 {
     invFriendsRequest(@{@"fields":@"id,name,picture"});
 }
