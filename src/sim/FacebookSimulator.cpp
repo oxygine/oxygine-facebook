@@ -154,7 +154,7 @@ void facebookSimulatorHideLike()
 
 void facebookSimulatorLikeUpdate(float x, float y)
 {
-    _btnLike->setPosition(x, y);
+    _btnLike->setPosition(x * getStage()->getWidth(), y * getStage()->getHeight());
 }
 
 void facebookSimulatorLogin(const vector<string>&)
