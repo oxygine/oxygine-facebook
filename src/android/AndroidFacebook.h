@@ -19,4 +19,4 @@ string jniFacebookGetAccessToken();
 vector<string> jniFacebookGetAccessTokenPermissions();
 string jniFacebookGetUserID();
 string jniFacebookGetAppID();
-void jniFacebookRequestInvitableFriends();
+void jniFacebookRequestInvitableFriends(const vector<string> &exc);

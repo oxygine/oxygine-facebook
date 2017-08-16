@@ -14,7 +14,7 @@ bool facebookSimulatorIsLoggedIn();
 void facebookSimulatorNewMeRequest();
 bool facebookSimulatorAppInviteDialog(const string& appLinkUrl, const string& previewImageUrl);
 void facebookSimulatorGameRequest(const std::string& title, const std::string& text, const std::vector<std::string>& dest, const std::string& objectID, const std::string& userData);
-void facebookSimulatorInvitableFriendsRequest();
+void facebookSimulatorInvitableFriendsRequest(const vector<string> &);
 vector<string> facebookSimulatorGetAccessTokenPermissions();
 
 std::string facebookSimulatorGetAccessToken();

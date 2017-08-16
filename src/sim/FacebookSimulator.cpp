@@ -311,9 +311,9 @@ vector<string> facebookSimulatorGetAccessTokenPermissions()
     return { "public_profile", "user_friends" };
 }
 
-void facebookSimulatorInvitableFriendsRequest()
+void facebookSimulatorInvitableFriendsRequest(const vector<string> &exclude)
 {
-    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([](Event*)
+    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([=](Event*)
     {
         facebook::InvitableFriendsEvent ev;
         ev.status = -1;
@@ -507,7 +507,7 @@ void facebookSimulatorInvitableFriendsRequest()
         if ((rand() % 3) < 2)
         {
             ev.status = 0;
-            facebookSimulatorInvitableFriendsRequest();
+            facebookSimulatorInvitableFriendsRequest(exclude);
         }
         facebook::internal::dispatch(&ev);
     });

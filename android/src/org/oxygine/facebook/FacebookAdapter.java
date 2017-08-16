@@ -83,7 +83,25 @@ public class FacebookAdapter extends ActivityObserver
                 new FacebookCallback<GameRequestDialog.Result>() {
                     public void onSuccess(GameRequestDialog.Result result) {
                         //String id = result.getId();
-                        nativeGameRequest(result.getRequestId(), false);
+
+                        List<String> rec = result.getRequestRecipients();
+                        //rec.toArray(new String[rec.size()]);
+
+                        JSONObject js = new JSONObject();
+                        try {
+                            js.put("request", result.getRequestId());
+
+                            JSONArray arr = new JSONArray(rec);
+                            js.put("to", arr);
+                        }
+                        catch (JSONException exc)
+                        {
+
+                        }
+
+                        String data = js.toString();
+
+                        nativeGameRequest(data, false);
                     }
                     public void onCancel() {
                         nativeGameRequest(null, true);
@@ -300,11 +318,18 @@ public class FacebookAdapter extends ActivityObserver
         r.executeAsync();
     }
 
-    public void _requestInvitableFriends(Bundle params)
+
+    public void requestInvitableFriends(final String exclude_ids[])
     {
-        if (params == null)
-            params = new Bundle();
+        Bundle params = new Bundle();
         params.putString("fields", "id,name,picture");
+
+        String exc = "";
+        for (String id:exclude_ids){
+            exc += id + ",";
+        }
+
+        params.putString("exclude_ids", exc);
 
         GraphRequest r = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
@@ -313,11 +338,6 @@ public class FacebookAdapter extends ActivityObserver
                 HttpMethod.GET);
 
         _requestInvitableFriends2(r);
-    }
-
-    public void requestInvitableFriends()
-    {
-        _requestInvitableFriends(null);
     }
 
 
