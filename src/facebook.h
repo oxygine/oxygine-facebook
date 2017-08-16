@@ -83,10 +83,14 @@ namespace facebook
     {
     public:
         enum {EVENT = sysEventID('f', 'g', 'r')};
-        GameRequestEvent(const string& id, bool Canceled): Event(EVENT), requestID(id), canceled(Canceled) {}
+        GameRequestEvent(const string& Data, bool Canceled);
 
-        string requestID;
+        string data;
         bool canceled;
+        
+        
+        string request;
+        vector<string> to;
     };
 
     spEventDispatcher dispatcher();

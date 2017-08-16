@@ -41,9 +41,16 @@
  */
 - (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog didCompleteWithResults:(NSDictionary *)results
 {
+    NSError *error2;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:results
+                                                       options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+                                                         error:&error2];
+    
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
     NSString *request = [results objectForKey:@"request"];
     if (request)
-        facebook::internal::gameRequestResult([request UTF8String], false);
+        facebook::internal::gameRequestResult([jsonString UTF8String], false);
     else
         facebook::internal::gameRequestResult("", true);
 }
@@ -216,9 +223,14 @@ void invFriendsRequest(NSDictionary *params)
     }];
 }
 
-void iosFacebookRequestInvitableFriends(const vector<string> &)
+void iosFacebookRequestInvitableFriends(const vector<string> &exclude_ids)
 {
-    invFriendsRequest(@{@"fields":@"id,name,picture"});
+    string exc;
+    for (const string &fid:exclude_ids)
+        exc += fid + ",";
+    
+    NSDictionary *params = @{@"fields":@"id,name,picture", @"exclude_ids": [NSString stringWithUTF8String:exc.c_str()] };
+    invFriendsRequest(params);
 }
 
 void iosFacebookRequestMe()

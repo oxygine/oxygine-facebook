@@ -10,6 +10,7 @@
 #include "sim/FacebookSimulator.h"
 #endif
 
+#include "json/json.h"
 
 
 namespace facebook
@@ -213,6 +214,28 @@ namespace facebook
     {
         return fGetAppID();
     }
+    
+    GameRequestEvent::GameRequestEvent(const string& Data, bool Canceled) : Event(EVENT), data(Data), canceled(Canceled)
+    {
+        Json::Reader reader;
+        Json::Value value;
+        bool ok = reader.parse((char*)&Data.front(), (char*)&Data.front() + Data.size(), value, false);
+        if (ok)
+        {
+            const Json::Value& jr = value["request"];
+            if (!jr.isNull())
+                request = jr.asString();
+            
+            const Json::Value& jto = value["to"];
+            if (!jto.isNull())
+            {
+                for (Json::Int i = 0; i < jto.size(); ++i)
+                {
+                    to.push_back(jto[i].asString());
+                }
+            }
+        }
+    }
 
     namespace internal
     {
@@ -262,10 +285,10 @@ namespace facebook
             log::messageln("facebook::internal::newMyFriendsRequestResult %s", data.c_str());
         }
 
-        void gameRequestResult(const string& id, bool canceled)
+        void gameRequestResult(const string& data, bool canceled)
         {
-            log::messageln("facebook::internal::gameRequestResult %s", id.c_str());
-            GameRequestEvent ev(id, canceled);
+            log::messageln("facebook::internal::gameRequestResult %s", data.c_str());
+            GameRequestEvent ev(data, canceled);
             if (_dispatcher)
                 _dispatcher->dispatchEvent(&ev);
         }
