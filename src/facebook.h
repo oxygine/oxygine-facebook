@@ -130,18 +130,19 @@ namespace facebook
 
         typedef std::vector<std::string>(*cbGetAccessTokenPermissions)();
 
-        extern cbInit          fInit;
-        extern cbFree          fFree;
-        extern cbLogin         fLogin;
-        extern cbLogout        fLogout;
-        extern cbNewMeRequest     fNewMeRequest;
-        extern cbGetFriends         fGetFriends;
-        extern cbRequestInvitableFriends fRequestInvitableFriends;
-        extern cbIsLoggedIn         fIsLoggedIn;
-        extern cbGetUserID           fGetUserID;
-        extern cbGetAccessToken fGetAccessToken;
-        extern cbGetAppID             fGetAppID;
-        extern cbGetAccessTokenPermissions fGetAccessTokenPermissions;
+        extern cbInit                       fInit;
+        extern cbFree                       fFree;
+        extern cbLogin                      fLogin;
+        extern cbLogout                     fLogout;
+        extern cbNewMeRequest               fNewMeRequest;
+        extern cbGetFriends                 fGetFriends;
+        extern cbRequestInvitableFriends    fRequestInvitableFriends;
+        extern cbGameRequest                fGameRequest;
+        extern cbIsLoggedIn                 fIsLoggedIn;
+        extern cbGetUserID                  fGetUserID;
+        extern cbGetAccessToken             fGetAccessToken;
+        extern cbGetAppID                   fGetAppID;
+        extern cbGetAccessTokenPermissions  fGetAccessTokenPermissions;
 
         void newMeRequestResult(const string& data, bool error);
         void loginResult(bool value);
