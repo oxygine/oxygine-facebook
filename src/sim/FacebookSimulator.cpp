@@ -148,7 +148,8 @@ void facebookSimulatorShowLike(const string &url)
 
 void facebookSimulatorHideLike()
 {
-    _btnLike->detach();
+    if(_btnLike)
+        _btnLike->detach();
     _btnLike = 0;
 }
 
