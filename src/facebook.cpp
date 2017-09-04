@@ -27,7 +27,7 @@ namespace facebook
         cbGetFriends    fGetFriends = []() {};
         cbGameRequest   fGameRequest = [](const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData) {};
 
-        cbRequestInvitableFriends fRequestInvitableFriends = [](const vector<string>& ) {};
+        cbRequestInvitableFriends fRequestInvitableFriends = [](const vector<string>&) {};
 
         cbIsLoggedIn     fIsLoggedIn = []() {return false; };
         cbGetUserID      fGetUserID = []() {return std::string(""); };
@@ -159,7 +159,7 @@ namespace facebook
         fGameRequest(title, text, dest, objectID, userData);
     }
 
-    void requestInvitableFriends(const vector<string> &exclude)
+    void requestInvitableFriends(const vector<string>& exclude)
     {
         log::messageln("facebook::requestInvitableFriends");
         fRequestInvitableFriends(exclude);
@@ -214,7 +214,7 @@ namespace facebook
     {
         return fGetAppID();
     }
-    
+
     GameRequestEvent::GameRequestEvent(const string& Data, bool Canceled) : Event(EVENT), data(Data), canceled(Canceled)
     {
         Json::Reader reader;
@@ -225,7 +225,7 @@ namespace facebook
             const Json::Value& jr = value["request"];
             if (!jr.isNull())
                 request = jr.asString();
-            
+
             const Json::Value& jto = value["to"];
             if (!jto.isNull())
             {

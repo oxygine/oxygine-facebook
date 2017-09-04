@@ -137,7 +137,7 @@ public:
 };
 
 spBtn _btnLike;
-void facebookSimulatorShowLike(const string &url)
+void facebookSimulatorShowLike(const string& url)
 {
     _btnLike = new Btn;
     _btnLike->setText("LIKE");
@@ -148,7 +148,7 @@ void facebookSimulatorShowLike(const string &url)
 
 void facebookSimulatorHideLike()
 {
-    if(_btnLike)
+    if (_btnLike)
         _btnLike->detach();
     _btnLike = 0;
 }
@@ -167,7 +167,7 @@ void facebookSimulatorLogin(const vector<string>&)
         dialog->setSize(500, 300);
         getStage()->addChild(dialog);
 
-        FacebookDialog *ptr = dialog.get();
+        FacebookDialog* ptr = dialog.get();
 
         dialog->_btnOk->addClickListener([ = ](Event * e)
         {
@@ -287,7 +287,7 @@ void facebookSimulatorGameRequest(const std::string& title, const std::string& t
         dialog->setSize(500, 300);
         getStage()->addChild(dialog);
 
-        FacebookDialog *ptr = dialog.get();
+        FacebookDialog* ptr = dialog.get();
 
         dialog->_btnOk->addClickListener([ = ](Event * e)
         {
@@ -312,9 +312,9 @@ vector<string> facebookSimulatorGetAccessTokenPermissions()
     return { "public_profile", "user_friends" };
 }
 
-void facebookSimulatorInvitableFriendsRequest(const vector<string> &exclude)
+void facebookSimulatorInvitableFriendsRequest(const vector<string>& exclude)
 {
-    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([=](Event*)
+    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([ = ](Event*)
     {
         facebook::InvitableFriendsEvent ev;
         ev.status = -1;

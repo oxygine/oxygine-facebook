@@ -321,7 +321,7 @@ void jniFacebookGameRequest(const string& title, const string& text, const vecto
     env->CallVoidMethod(_jFacebookObject, jfunc, jTitle, jText, jdest, jobjectID, juserData);
 }
 
-void jniFacebookRequestInvitableFriends(const vector<string> &exc)
+void jniFacebookRequestInvitableFriends(const vector<string>& exc)
 {
     if (!isFacebookEnabled())
         return;

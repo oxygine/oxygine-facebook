@@ -87,8 +87,8 @@ namespace facebook
 
         string data;
         bool canceled;
-        
-        
+
+
         string request;
         vector<string> to;
     };
@@ -101,7 +101,7 @@ namespace facebook
     void getFriends();
     void newMeRequest();
     void gameRequest(const string& title, const string& text, const vector<string>& dest, const string& objectID, const string& userData);
-    void requestInvitableFriends(const vector<string> &exclude);
+    void requestInvitableFriends(const vector<string>& exclude);
 
 
     bool appInviteDialog(const string& appLinkUrl, const string& previewImageUrl);
