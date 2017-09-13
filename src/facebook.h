@@ -21,9 +21,8 @@ namespace facebook
         enum { EVENT = sysEventID('f', 'b', 'n') };
         NewMeRequestEvent() : Event(EVENT) {}
 
-        string id;
-        //string link;
-        string name;
+        string data;
+
         bool error = false;
     };
 
@@ -52,6 +51,25 @@ namespace facebook
 
     };
 
+    class InvitableFriendsEvent: public Event
+    {
+    public:
+        enum {EVENT = sysEventID('f', 'I', 'F')};
+
+        InvitableFriendsEvent(): Event(EVENT), status(-1) {}
+        struct Friend
+        {
+            string id;
+            string name;
+            string url;
+        };
+
+        //vector<Friend> friends;
+        string data;
+        int status;//ok = 0; end = -1, error = -2
+
+    };
+
     class TokenEvent : public Event
     {
     public:
@@ -61,47 +79,79 @@ namespace facebook
         string token;
     };
 
+    class GameRequestEvent: public Event
+    {
+    public:
+        enum {EVENT = sysEventID('f', 'g', 'r')};
+        GameRequestEvent(const string& Data, bool Canceled);
+
+        string data;
+        bool canceled;
+
+
+        string request;
+        vector<string> to;
+    };
+
     spEventDispatcher dispatcher();
 
     bool isLoggedIn();
-    void login();
+    void login(const vector<string>& permissions);
     void logout();
     void getFriends();
     void newMeRequest();
+    void gameRequest(const string& title, const string& text, const vector<string>& dest, const string& objectID, const string& userData);
+    void requestInvitableFriends(const vector<string>& exclude);
+
+
     bool appInviteDialog(const string& appLinkUrl, const string& previewImageUrl);
 
     string getAccessToken();
     string getUserID();
     string getAppID();
+    vector<string> getAccessTokenPermissions();
 
     namespace internal
     {
         typedef void(*cbInit)();
         typedef void(*cbFree)();
-        typedef void(*cbLogin)();
+        typedef void(*cbLogin)(const vector<string>& permissions);
         typedef void(*cbLogout)();
         typedef void(*cbNewMeRequest)();
+        typedef void(*cbGameRequest)(const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData);
         typedef void(*cbGetFriends)();
+
+        typedef void(*cbRequestInvitableFriends)(const vector<string>&);
 
         typedef bool(*cbIsLoggedIn)();
         typedef std::string(*cbGetUserID)();
         typedef std::string(*cbGetAccessToken)();
         typedef std::string(*cbGetAppID)();
 
-        extern cbInit          fInit;
-        extern cbFree          fFree;
-        extern cbLogin         fLogin;
-        extern cbLogout        fLogout;
-        extern cbNewMeRequest     fNewMeRequest;
-        extern cbGetFriends         fGetFriends;
-        extern cbIsLoggedIn         fIsLoggedIn;
-        extern cbGetUserID           fGetUserID;
-        extern cbGetAccessToken fGetAccessToken;
-        extern cbGetAppID             fGetAppID;
+        typedef std::vector<std::string>(*cbGetAccessTokenPermissions)();
+
+        extern cbInit                       fInit;
+        extern cbFree                       fFree;
+        extern cbLogin                      fLogin;
+        extern cbLogout                     fLogout;
+        extern cbNewMeRequest               fNewMeRequest;
+        extern cbGetFriends                 fGetFriends;
+        extern cbRequestInvitableFriends    fRequestInvitableFriends;
+        extern cbGameRequest                fGameRequest;
+        extern cbIsLoggedIn                 fIsLoggedIn;
+        extern cbGetUserID                  fGetUserID;
+        extern cbGetAccessToken             fGetAccessToken;
+        extern cbGetAppID                   fGetAppID;
+        extern cbGetAccessTokenPermissions  fGetAccessTokenPermissions;
 
         void newMeRequestResult(const string& data, bool error);
         void loginResult(bool value);
         void newToken(const string& value);
         void newMyFriendsRequestResult(const string& data, bool error);
+
+        void gameRequestResult(const string& id, bool canceled);
+        //void resultInvitableFriends(int page, vector<);
+
+        void dispatch(Event*);
     }
 };

@@ -5,23 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookRequestError;
-import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.Profile;
-import com.facebook.ProfileTracker;
+import com.facebook.*;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.share.model.AppInviteContent;
+import com.facebook.share.model.GameRequestContent;
 import com.facebook.share.widget.AppInviteDialog;
 
+import com.facebook.share.widget.GameRequestDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +22,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import java.security.MessageDigest;
-import java.util.Arrays;
+import java.util.*;
+
 import android.util.Base64;
 
 public class FacebookAdapter extends ActivityObserver
@@ -38,16 +31,19 @@ public class FacebookAdapter extends ActivityObserver
     private static String TAG = "FacebookAdapter";
 
     ProfileTracker profileTracker;
-    AccessToken accessToken;
+    //AccessToken accessToken;
     AccessTokenTracker accessTokenTracker;
     CallbackManager callbackManager;
     Activity activity;
     JSONObject userData;
+    GameRequestDialog requestDialog;
 
     public native void loginResult(boolean value);
     public native void newToken(String value);
     public native void newMyFriendsRequestResult(String data, boolean error);
     public native void newMeRequestResult(String data, boolean error);
+    public native void nativeGameRequest(String request, boolean error);
+    public native void nativeResponseInvitableFriends(String data, int page);
 
     public void logout()
     {
@@ -56,31 +52,65 @@ public class FacebookAdapter extends ActivityObserver
         LoginManager.getInstance().logOut();
     }
 
-    public void login()
+    public void login(String[] permissions)
     {
         Log.i(TAG, "login");
-        LoginManager.getInstance().logInWithReadPermissions(activity, Arrays.asList("public_profile", "user_friends"));
+        LoginManager.getInstance().logInWithReadPermissions(activity, Arrays.asList(permissions));
+    }
+
+    public void printKeyHash()
+    {
+        try {
+            PackageInfo info = activity.getPackageManager().getPackageInfo(
+               activity.getPackageName(), PackageManager.GET_SIGNATURES);
+
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (Exception e) {         
+        }
     }
 
     @Override
     public void onCreate()
     {
-    	//if (isLoggedIn())
-        //    newToken(accessToken.getToken());
+        printKeyHash();
 
-    	/*
-    	try {
-    	    PackageInfo info = activity.getPackageManager().getPackageInfo(
-    	       activity.getPackageName(), PackageManager.GET_SIGNATURES);
+        requestDialog = new GameRequestDialog(_activity);
+        requestDialog.registerCallback(callbackManager,
+                new FacebookCallback<GameRequestDialog.Result>() {
+                    public void onSuccess(GameRequestDialog.Result result) {
+                        //String id = result.getId();
 
-	        for (Signature signature : info.signatures) {
-	            MessageDigest md = MessageDigest.getInstance("SHA");
-	            md.update(signature.toByteArray());
-	            Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-	        }
-	    } catch (Exception e) {	        
-	    }
-	    */
+                        List<String> rec = result.getRequestRecipients();
+                        //rec.toArray(new String[rec.size()]);
+
+                        JSONObject js = new JSONObject();
+                        try {
+                            js.put("request", result.getRequestId());
+
+                            JSONArray arr = new JSONArray(rec);
+                            js.put("to", arr);
+                        }
+                        catch (JSONException exc)
+                        {
+
+                        }
+
+                        String data = js.toString();
+
+                        nativeGameRequest(data, false);
+                    }
+                    public void onCancel() {
+                        nativeGameRequest(null, true);
+                    }
+                    public void onError(FacebookException error) {
+                        nativeGameRequest(null, true);
+                    }
+                }
+        );
     }
 
     public FacebookAdapter(Activity a)
@@ -97,7 +127,7 @@ public class FacebookAdapter extends ActivityObserver
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.i(TAG, "Login::onSuccess");
-                        accessToken = loginResult.getAccessToken();
+                        //accessToken = loginResult.getAccessToken();
                         loginResult(true);
                     }
 
@@ -122,30 +152,16 @@ public class FacebookAdapter extends ActivityObserver
                     AccessToken currentAccessToken) {
                 // Set the access token using
                 // currentAccessToken when it's loaded or set.
-                accessToken = currentAccessToken;
-                if (accessToken != null)
-                	newToken(accessToken.getToken());
+                //accessToken = currentAccessToken;
+                if (currentAccessToken != null)
+                	newToken(currentAccessToken.getToken());
             }
         };
-        // If the access token is available already assign it.
-        accessToken = AccessToken.getCurrentAccessToken();
-
-/*
-        profileTracker = new ProfileTracker() {
-            @Override
-            protected void onCurrentProfileChanged(
-                    Profile oldProfile,
-                    Profile currentProfile) {
-                // App code
-            }
-        };*/
-
-
     }
 
     public void newMyFriendsRequest() {
         Log.i(TAG, "newMyFriendsRequest");
-        GraphRequest request = GraphRequest.newMyFriendsRequest(accessToken, new GraphRequest.GraphJSONArrayCallback() {
+        GraphRequest request = GraphRequest.newMyFriendsRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONArrayCallback() {
             @Override
             public void onCompleted(JSONArray objects, GraphResponse response) {
                 Log.i(TAG, "newMyFriendsRequest:onCompleted " + objects.toString());
@@ -176,7 +192,7 @@ public class FacebookAdapter extends ActivityObserver
     public void newMeRequest() {
         Log.i(TAG, "newMeRequest");
         GraphRequest request = GraphRequest.newMeRequest(
-                accessToken,
+                AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
@@ -199,10 +215,44 @@ public class FacebookAdapter extends ActivityObserver
 
     public String getUserID()
     {
-        if (accessToken == null)
+        if (AccessToken.getCurrentAccessToken() == null)
             return "";
         
-        return accessToken.getUserId();
+        return AccessToken.getCurrentAccessToken().getUserId();
+    }
+
+    public void sendGameRequest(final String title, final String text, final String[] dest, final String objectID, final String userData)
+    {
+        _activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+
+                GameRequestContent.Builder builder = new GameRequestContent.Builder();
+
+                if (text != null)
+                    builder.setMessage(text);
+
+                if (title != null)
+                    builder.setTitle(title);
+
+                if (dest != null)
+                {
+                    List<String> rec = new ArrayList<>(Arrays.asList(dest));
+                    builder.setRecipients(rec);
+                }
+
+                if (objectID != null)
+                    builder.setObjectId(objectID);
+
+                if (userData != null)
+                    builder.setData(userData);
+
+                //builder.setActionType(GameRequestContent.ActionType.SEND);
+
+                requestDialog.show(builder.build());
+            }
+        });
     }
 
     public String getAppID()
@@ -212,17 +262,84 @@ public class FacebookAdapter extends ActivityObserver
 
     public String getAccessToken()
     {
-        if (accessToken == null)
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        if (token == null)
             return "";
 
-        if (accessToken.isExpired())
+        if (token.isExpired())
         {
-            Log.i(TAG, "getAccessToken::expired " + accessToken.getToken());
+            Log.i(TAG, "getAccessToken::expired " + token.getToken());
             return "";
         }
 
-        return accessToken.getToken();
+        return token.getToken();
     }
+
+    public String[] getAccessTokenPermissions()
+    {
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        if (token == null)
+            return null;
+
+        Set<String> perm = token.getPermissions();
+        return perm.toArray(new String[perm.size()]);
+    }
+
+    public void _requestInvitableFriends2(GraphRequest r)
+    {
+        r.setCallback(new GraphRequest.Callback() {
+            public void onCompleted(GraphResponse response) {
+
+
+                if (response.getError() != null){
+                    nativeResponseInvitableFriends(response.getRawResponse(), -2);
+                    return;
+                }
+
+                GraphRequest next = response.getRequestForPagedResults(GraphResponse.PagingDirection.NEXT);
+                int page = -1;
+                if (next != null) {
+                    page = 0;
+                    _requestInvitableFriends2(next);
+                }
+
+
+                try {
+                    String obj = response.getJSONObject().getJSONObject("paging").getString("next");
+                    Log.d("a", "ad");
+                } catch (JSONException exc){
+                    Log.d("a", "adasd");
+                }
+
+
+            nativeResponseInvitableFriends(response.getRawResponse(), page);
+        }});
+
+        r.executeAsync();
+    }
+
+
+    public void requestInvitableFriends(final String exclude_ids[])
+    {
+        Bundle params = new Bundle();
+        params.putString("fields", "id,name,picture");
+
+        String exc = "";
+        for (String id:exclude_ids){
+            exc += id + ",";
+        }
+
+        params.putString("exclude_ids", exc);
+
+        GraphRequest r = new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/me/invitable_friends",
+                params,
+                HttpMethod.GET);
+
+        _requestInvitableFriends2(r);
+    }
+
 
     public boolean isLoggedIn() {
         Log.i(TAG, "isLoggedIn");
@@ -245,13 +362,10 @@ public class FacebookAdapter extends ActivityObserver
 
     @Override
     public void onResume() {
-        // Logs 'install' and 'app activate' App Events.
-        AppEventsLogger.activateApp(activity);
+
     }
 
     @Override
     public void onPause() {
-        // Logs 'app deactivate' App Event.
-        AppEventsLogger.deactivateApp(activity);
     }
 }

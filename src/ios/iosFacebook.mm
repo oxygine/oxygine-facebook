@@ -9,7 +9,77 @@
 #import <Foundation/Foundation.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
+#import <FBSDKShareKit/FBSDKShareKit.h>
 #include "facebook.h"
+
+
+
+
+@interface FacebookRequests:NSObject<FBSDKGameRequestDialogDelegate>
+{
+}
+@end
+
+@implementation FacebookRequests
+
+- (id)init
+{
+    if (!(self = [super init]))
+        return nil;
+    
+    return self;
+}
+
+
+#pragma mark - FBSDKGameRequestDialogDelegate
+
+
+/**
+ Sent to the delegate when the game request completes without error.
+ - Parameter gameRequestDialog: The FBSDKGameRequestDialog that completed.
+ - Parameter results: The results from the dialog.  This may be nil or empty.
+ */
+- (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog didCompleteWithResults:(NSDictionary *)results
+{
+    NSError *error2;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:results
+                                                       options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+                                                         error:&error2];
+    
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    NSString *request = [results objectForKey:@"request"];
+    if (request)
+        facebook::internal::gameRequestResult([jsonString UTF8String], false);
+    else
+        facebook::internal::gameRequestResult("", true);
+}
+
+/**
+ Sent to the delegate when the game request encounters an error.
+ - Parameter gameRequestDialog: The FBSDKGameRequestDialog that completed.
+ - Parameter error: The error.
+ */
+- (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog didFailWithError:(NSError *)error
+{
+    facebook::internal::gameRequestResult("", true);
+}
+
+/**
+ Sent to the delegate when the game request dialog is cancelled.
+ - Parameter gameRequestDialog: The FBSDKGameRequestDialog that completed.
+ */
+- (void)gameRequestDialogDidCancel:(FBSDKGameRequestDialog *)gameRequestDialog
+{
+    facebook::internal::gameRequestResult("", true);
+}
+#pragma mark -
+
+@end
+
+FacebookRequests* requests = 0;
+
+
 
 UIViewController * getViewcontrollerForFB(void)
 {
@@ -33,11 +103,21 @@ UIViewController * getViewcontrollerForFB(void)
     return nullptr;
 }
 
-void iosFacebookLogin()
+void iosFacebookLogin(const vector<string> &permissions)
 {
+    //FBSDKAccessToken *t = [FBSDKAccessToken currentAccessToken];
+    
+    NSMutableArray *perm = [NSMutableArray array];
+    
+    for (const string &item:permissions)
+    {
+        [perm addObject:[NSString stringWithUTF8String:item.c_str()]];
+    }
+    
+    
     FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
     [login
-     logInWithReadPermissions:@[@"public_profile"]
+     logInWithReadPermissions:perm
      fromViewController:nil
      handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
          
@@ -77,6 +157,82 @@ std::string iosFacebookGetAppID()
     return [[FBSDKSettings appID] UTF8String];
 }
 
+std::vector<std::string> iosFacebookGetPermissions()
+{
+    std::vector<std::string> permissions;
+    
+    FBSDKAccessToken *token = [FBSDKAccessToken currentAccessToken];
+    if (token)
+    {
+        NSArray* perm = [[token permissions] allObjects];
+        for (int i = 0; i < [perm count]; ++i)
+            permissions.push_back([[perm objectAtIndex: i] UTF8String]);
+        //return [[FBSDKAccessToken currentAccessToken].userID UTF8String];
+    }
+    
+    return permissions;
+}
+
+void invFriendsRequest(NSDictionary *params)
+{
+    FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc]
+                                  initWithGraphPath:@"/me/invitable_friends"
+                                  parameters:params
+                                  HTTPMethod:@"GET"];
+    [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection,
+                                          id result,
+                                          NSError *error) {
+        
+        facebook::InvitableFriendsEvent ev;
+        
+        if (error)
+        {
+            ev.status = -2;
+            
+            facebook::dispatcher()->dispatchEvent(&ev);
+            
+            return;
+        }
+        
+        
+        NSError *error2;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:result
+                                                           options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+                                                             error:&error2];
+
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+        ev.data = [jsonString UTF8String];
+        
+        
+        // Handle the result
+        NSString* next  = result[@"paging"][@"cursors"][@"after"];
+        //NSString* next = [t objectForKey:@"after"];
+        if (next)
+        {
+            NSDictionary *params = @{@"fields":@"id,name,picture", @"after":next};
+            invFriendsRequest(params);
+            ev.status = 0;
+        }
+        else
+            ev.status = -1;
+        
+        
+        facebook::dispatcher()->dispatchEvent(&ev);
+
+    }];
+}
+
+void iosFacebookRequestInvitableFriends(const vector<string> &exclude_ids)
+{
+    string exc;
+    for (const string &fid:exclude_ids)
+        exc += fid + ",";
+    
+    NSDictionary *params = @{@"fields":@"id,name,picture", @"exclude_ids": [NSString stringWithUTF8String:exc.c_str()] };
+    invFriendsRequest(params);
+}
+
 void iosFacebookRequestMe()
 {
     if ([FBSDKAccessToken currentAccessToken])
@@ -110,4 +266,47 @@ void iosFacebookRequestMe()
              }
          }];
     }
+}
+
+void iosFacebookInit()
+{
+    requests = [[FacebookRequests alloc] init];
+    
+}
+
+void iosFacebookFree()
+{
+    requests = Nil;
+}
+
+void iosFacebookGameRequest(const string &title, const string &text, const vector<string>& dest, const string &objectID, const std::string &userData)
+{
+    FBSDKGameRequestContent *request = [[FBSDKGameRequestContent alloc] init];
+    
+    request.message = [NSString stringWithUTF8String:text.c_str()];
+    request.title = [NSString stringWithUTF8String:title.c_str()];
+
+    
+    //request.actionType = FBSDKGameRequestActionTypeSend;
+    request.data = [NSString stringWithUTF8String:userData.c_str()];
+
+    
+    //request.objectID = [NSString stringWithUTF8String:objectID.c_str()];
+
+
+    
+    NSMutableArray *rec = [NSMutableArray array];
+    for (const string &id:dest)
+    {
+        [rec addObject:[NSString stringWithUTF8String:id.c_str()] ];
+    }
+    request.recipients = rec;
+    
+    
+    FBSDKGameRequestDialog *dialog = [[FBSDKGameRequestDialog alloc] init];
+    dialog.content = request;
+    dialog.frictionlessRequestsEnabled = true;
+    dialog.delegate = requests;
+    
+    [dialog show];
 }

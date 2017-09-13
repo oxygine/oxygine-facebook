@@ -1,11 +1,14 @@
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:2.2.3'
     }
 }
+
 
 allprojects {
     repositories {
@@ -18,7 +21,7 @@ apply plugin: 'com.android.library'
 
 dependencies {
         compile(project(':oxygine-extension'))
-        compile 'com.facebook.android:facebook-android-sdk:4.20.+'
+        compile 'com.facebook.android:facebook-android-sdk:4.+'
 }
 
 android {

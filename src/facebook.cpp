@@ -10,23 +10,30 @@
 #include "sim/FacebookSimulator.h"
 #endif
 
+#include "json/json.h"
 
 
 namespace facebook
 {
     namespace internal
     {
+        using namespace std;
+
         cbInit          fInit = []() {};
         cbFree          fFree = []() {};
-        cbLogin         fLogin = []() {};
+        cbLogin         fLogin = [](const vector<string>& permissions) {};
         cbLogout        fLogout = []() {};
         cbNewMeRequest  fNewMeRequest = []() {};
         cbGetFriends    fGetFriends = []() {};
+        cbGameRequest   fGameRequest = [](const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData) {};
+
+        cbRequestInvitableFriends fRequestInvitableFriends = [](const vector<string>&) {};
 
         cbIsLoggedIn     fIsLoggedIn = []() {return false; };
         cbGetUserID      fGetUserID = []() {return std::string(""); };
         cbGetAccessToken fGetAccessToken = []() {return std::string(""); };
         cbGetAppID       fGetAppID = []() {return std::string(""); };
+        cbGetAccessTokenPermissions fGetAccessTokenPermissions = []() {return std::vector<string>();};
     }
 
     using namespace internal;
@@ -53,7 +60,12 @@ namespace facebook
         fGetUserID = jniFacebookGetUserID;
         fGetAccessToken = jniFacebookGetAccessToken;
         fGetAppID = jniFacebookGetAppID;
+        fGameRequest = jniFacebookGameRequest;
+        fGetAccessTokenPermissions = jniFacebookGetAccessTokenPermissions;
+        fRequestInvitableFriends = jniFacebookRequestInvitableFriends;
 #elif TARGET_OS_IPHONE
+        fInit = iosFacebookInit;
+        fFree = iosFacebookFree;
         fLogin = iosFacebookLogin;
         fLogout = iosFacebookLogout;
         fNewMeRequest = iosFacebookRequestMe;
@@ -62,9 +74,12 @@ namespace facebook
         fGetUserID = iosFacebookGetUserID;
         fGetAccessToken = iosFacebookGetAccessToken;
         fGetAppID = []() {OX_ASSERT(0); return std::string(""); };
+        fGameRequest = iosFacebookGameRequest;
+        fGetAccessTokenPermissions = iosFacebookGetPermissions;
+        fRequestInvitableFriends = iosFacebookRequestInvitableFriends;
 #else
         fInit = facebookSimulatorInit;
-
+        fFree = facebookSimulatorFree;
         fLogin = facebookSimulatorLogin;
         fLogout = facebookSimulatorLogout;
         fNewMeRequest = facebookSimulatorNewMeRequest;
@@ -73,6 +88,9 @@ namespace facebook
         fGetUserID = facebookSimulatorGetUserID;
         fGetAccessToken = facebookSimulatorGetAccessToken;
         fGetAppID = facebookSimulatorGetAppID;
+        fGameRequest = facebookSimulatorGameRequest;
+        fGetAccessTokenPermissions = facebookSimulatorGetAccessTokenPermissions;
+        fRequestInvitableFriends = facebookSimulatorInvitableFriendsRequest;
 #endif
 
 
@@ -98,11 +116,11 @@ namespace facebook
         log::messageln("facebook::free done");
     }
 
-    void login()
+    void login(const vector<string>& permissions)
     {
         log::messageln("facebook::login");
 
-        fLogin();
+        fLogin(permissions);
 
         log::messageln("facebook::login done");
     }
@@ -136,6 +154,17 @@ namespace facebook
         log::messageln("facebook::newMeRequest done");
     }
 
+    void gameRequest(const string& title, const string& text, const vector<string>& dest, const string& objectID, const string& userData)
+    {
+        fGameRequest(title, text, dest, objectID, userData);
+    }
+
+    void requestInvitableFriends(const vector<string>& exclude)
+    {
+        log::messageln("facebook::requestInvitableFriends");
+        fRequestInvitableFriends(exclude);
+    }
+
     void getFriends()
     {
         log::messageln("facebook::getFriends");
@@ -157,6 +186,20 @@ namespace facebook
         return token;
     }
 
+    vector<string> getAccessTokenPermissions()
+    {
+        log::messageln("facebook::getAccessToken");
+        vector<string> res = fGetAccessTokenPermissions();
+        string str;
+        for (const auto& s : res)
+            str += s + ",";
+        if (!str.empty())
+            str.pop_back();
+        log::messageln("permissions: %s", str.c_str());
+
+        return res;
+    }
+
     string getUserID()
     {
         log::messageln("facebook::getUserID");
@@ -170,6 +213,28 @@ namespace facebook
     string getAppID()
     {
         return fGetAppID();
+    }
+
+    GameRequestEvent::GameRequestEvent(const string& Data, bool Canceled) : Event(EVENT), data(Data), canceled(Canceled)
+    {
+        Json::Reader reader;
+        Json::Value value;
+        bool ok = reader.parse((char*)&Data.front(), (char*)&Data.front() + Data.size(), value, false);
+        if (ok)
+        {
+            const Json::Value& jr = value["request"];
+            if (!jr.isNull())
+                request = jr.asString();
+
+            const Json::Value& jto = value["to"];
+            if (!jto.isNull())
+            {
+                for (Json::Int i = 0; i < jto.size(); ++i)
+                {
+                    to.push_back(jto[i].asString());
+                }
+            }
+        }
     }
 
     namespace internal
@@ -208,9 +273,7 @@ namespace facebook
             }
             else
             {
-                event.id = root["id"].asCString();
-                //event.link = root["link"].asCString();
-                event.name = root["name"].asCString();
+                event.data = data;
             }
 
             if (_dispatcher)
@@ -220,6 +283,20 @@ namespace facebook
         void newMyFriendsRequestResult(const string& data, bool error)
         {
             log::messageln("facebook::internal::newMyFriendsRequestResult %s", data.c_str());
+        }
+
+        void gameRequestResult(const string& data, bool canceled)
+        {
+            log::messageln("facebook::internal::gameRequestResult %s", data.c_str());
+            GameRequestEvent ev(data, canceled);
+            if (_dispatcher)
+                _dispatcher->dispatchEvent(&ev);
+        }
+
+        void dispatch(Event* ev)
+        {
+            if (_dispatcher)
+                _dispatcher->dispatchEvent(ev);
         }
     }
 }

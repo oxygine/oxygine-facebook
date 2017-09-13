@@ -1,0 +1,76 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.3'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
+
+
+apply plugin: 'com.android.application'
+
+
+
+dependencies {
+    compile(project(':oxygine-extension'))
+    compile(project(':oxygine-lib')) { exclude module: 'oxygine-extension' }
+    compile 'com.facebook.android:facebook-android-sdk:4.+'
+    compile(project(':oxygine-facebook')) {
+        exclude module: "support-annotations"
+        exclude module: "support-v4"
+        transitive = true
+    }
+}
+
+android {
+    enforceUniquePackageName=false
+        
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 23
+    }
+
+    buildTypes {
+        debug {
+            resValue "string", "fb_app_id", "136567916522144"
+        }
+        
+        release {
+            resValue "string", "fb_app_id", "136567916522144"
+        }
+    }
+
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['../data']
+        }
+    }
+
+    aaptOptions {
+        noCompress 'zip', 'ogg'
+        ignoreAssetsPattern "!*.dll:*.icf"
+    }
+}
