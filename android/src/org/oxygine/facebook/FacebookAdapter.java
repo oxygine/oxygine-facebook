@@ -326,10 +326,15 @@ public class FacebookAdapter extends ActivityObserver
 
         String exc = "";
         for (String id:exclude_ids){
-            exc += id + ",";
+            exc += "'" + id + "',";
         }
 
-        params.putString("exclude_ids", exc);
+        if (!exc.isEmpty())
+            exc = exc.substring(0, exc.length() - 1);
+
+        exc = "[" + exc + "]";
+
+        params.putString("excluded_ids", exc);
 
         GraphRequest r = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
