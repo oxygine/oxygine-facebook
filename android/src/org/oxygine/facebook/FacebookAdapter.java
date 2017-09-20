@@ -335,6 +335,7 @@ public class FacebookAdapter extends ActivityObserver
         exc = "[" + exc + "]";
 
         params.putString("excluded_ids", exc);
+        params.putInt("limit", 5000);
 
         GraphRequest r = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),

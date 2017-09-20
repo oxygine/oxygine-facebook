@@ -219,7 +219,10 @@ namespace facebook
     {
         Json::Reader reader;
         Json::Value value;
-        bool ok = reader.parse((char*)&Data.front(), (char*)&Data.front() + Data.size(), value, false);
+        
+        bool ok = !Data.empty();
+        if (ok)
+            ok = reader.parse((char*)&Data.front(), (char*)&Data.front() + Data.size(), value, false);
         if (ok)
         {
             const Json::Value& jr = value["request"];
