@@ -234,7 +234,7 @@ void iosFacebookRequestInvitableFriends(const vector<string> &exclude_ids)
         exc.pop_back();
     
     exc = "[" + exc  + "]";
-    NSDictionary *params = @{@"fields":@"id,name,picture", @"excluded_ids": [NSString stringWithUTF8String:exc.c_str()] };
+    NSDictionary *params = @{@"fields":@"id,name,picture", @"limit":@5000, @"excluded_ids": [NSString stringWithUTF8String:exc.c_str()] };
 #else
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
