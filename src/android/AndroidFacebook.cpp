@@ -1,13 +1,13 @@
 #include <jni.h>
 #include <android/log.h>
 #include <assert.h>
-#include "core/oxygine.h"
-#include "core/Object.h"
-#include "core/ThreadMessages.h"
-#include "core/oxygine.h"
-#include "core/android/jniHelper.h"
-#include "core/android/jniUtils.h"
-#include "json/json.h"
+#include "ox/oxygine.hpp"
+#include "ox/Object.hpp"
+#include "ox/ThreadMessages.hpp"
+#include "ox/oxygine.hpp"
+#include "oxygine/core/android/jniHelper.h"
+#include "oxygine/core/android/jniUtils.h"
+#include "ox/json.hpp"
 #include "src/facebook.h"
 
 
