@@ -225,11 +225,32 @@ void invFriendsRequest(NSDictionary *params)
 
 void iosFacebookRequestInvitableFriends(const vector<string> &exclude_ids)
 {
+#if 1
     string exc;
     for (const string &fid:exclude_ids)
-        exc += fid + ",";
+        exc += "'" + fid + "',";
     
-    NSDictionary *params = @{@"fields":@"id,name,picture", @"exclude_ids": [NSString stringWithUTF8String:exc.c_str()] };
+    if (!exc.empty())
+        exc.pop_back();
+    
+    exc = "[" + exc  + "]";
+    NSDictionary *params = @{@"fields":@"id,name,picture", @"limit":@5000, @"excluded_ids": [NSString stringWithUTF8String:exc.c_str()] };
+#else
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setValue:@"id,name,picture" forKey:@"fields"];
+    if (!exclude_ids.empty())
+    {
+        NSMutableArray *exc = [NSMutableArray array];
+        for (const string &fid:exclude_ids)
+        {
+            [exc addObject:[NSString stringWithUTF8String:fid.c_str()] ];
+        }
+        [params setValue:exc forKey:@"excluded_ids"];
+    }
+    
+#endif
+    
     invFriendsRequest(params);
 }
 
