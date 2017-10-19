@@ -232,7 +232,7 @@ namespace facebook
             const Json::Value& jto = value["to"];
             if (!jto.isNull())
             {
-                for (Json::Int i = 0; i < jto.size(); ++i)
+                for (Json::ArrayIndex i = 0; i < jto.size(); ++i)
                 {
                     to.push_back(jto[i].asString());
                 }
