@@ -13,7 +13,10 @@
 #include "facebook.h"
 
 
-
+namespace oxygine
+{
+    extern bool _renderEnabled;
+}
 
 @interface FacebookRequests:NSObject<FBSDKGameRequestDialogDelegate>
 {
@@ -41,6 +44,7 @@
  */
 - (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog didCompleteWithResults:(NSDictionary *)results
 {
+    _renderEnabled = true;
     NSError *error2;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:results
                                                        options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
@@ -62,6 +66,7 @@
  */
 - (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog didFailWithError:(NSError *)error
 {
+    _renderEnabled = true;
     facebook::internal::gameRequestResult("", true);
 }
 
@@ -71,6 +76,7 @@
  */
 - (void)gameRequestDialogDidCancel:(FBSDKGameRequestDialog *)gameRequestDialog
 {
+    _renderEnabled = true;
     facebook::internal::gameRequestResult("", true);
 }
 #pragma mark -
@@ -114,12 +120,16 @@ void iosFacebookLogin(const vector<string> &permissions)
         [perm addObject:[NSString stringWithUTF8String:item.c_str()]];
     }
     
+    _renderEnabled = false;
+    
     
     FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
     [login
      logInWithReadPermissions:perm
      fromViewController:nil
      handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+         
+         _renderEnabled = true;
          
          if (error) {
              facebook::internal::loginResult(false);
@@ -302,6 +312,8 @@ void iosFacebookFree()
 
 void iosFacebookGameRequest(const string &title, const string &text, const vector<string>& dest, const string &objectID, const std::string &userData)
 {
+    _renderEnabled = false;
+    
     FBSDKGameRequestContent *request = [[FBSDKGameRequestContent alloc] init];
     
     request.message = [NSString stringWithUTF8String:text.c_str()];
