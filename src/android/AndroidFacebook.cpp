@@ -66,9 +66,20 @@ extern "C"
     {
         string data = jniGetString(env, jData);
 
-        core::getMainThreadDispatcher().postCallback([ = ]()
+        core::getMainThreadDispatcher().postCallback([=]()
         {
             facebook::internal::gameRequestResult(data, (bool)error);
+        });
+    }
+
+    JNIEXPORT void JNICALL Java_org_oxygine_facebook_FacebookAdapter_nativeShareResult(JNIEnv* env, jobject obj, jstring jData, jboolean canceled)
+    {
+        string data = jniGetString(env, jData);
+
+        core::getMainThreadDispatcher().postCallback([=]()
+        {
+            facebook::ShareEvent se((bool)canceled);
+            facebook::internal::dispatch(&se);
         });
     }
 
@@ -334,4 +345,19 @@ void jniFacebookRequestInvitableFriends(const vector<string>& exc)
 
     jobjectArray arr =  jniGetObjectStringArray(exc, env);
     env->CallVoidMethod(_jFacebookObject, jFn, arr);
+}
+
+void jniFacebookShareLink(const string &url, const string &quote)
+{
+    if (!isFacebookEnabled())
+        return;
+
+
+    JNIEnv* env = jniGetEnv();
+    LOCAL_REF_HOLDER(env);
+
+    jmethodID jfn = env->GetMethodID(_jFacebookClass, "shareLink", "(Ljava/lang/String;Ljava/lang/String;)V");
+    JNI_NOT_NULL(jfn);
+
+    env->CallVoidMethod(_jFacebookObject, jfn, env->NewStringUTF(url.c_str()), env->NewStringUTF(quote.c_str()));
 }

@@ -2,6 +2,7 @@ package org.oxygine.facebook;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -9,11 +10,14 @@ import com.facebook.*;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.share.Sharer;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.model.GameRequestContent;
+import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.AppInviteDialog;
 
 import com.facebook.share.widget.GameRequestDialog;
+import com.facebook.share.widget.ShareDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +40,9 @@ public class FacebookAdapter extends ActivityObserver
     CallbackManager callbackManager;
     Activity activity;
     JSONObject userData;
+
     GameRequestDialog requestDialog;
+    ShareDialog shareDialog;
 
     public native void loginResult(boolean value);
     public native void newToken(String value);
@@ -44,6 +50,7 @@ public class FacebookAdapter extends ActivityObserver
     public native void newMeRequestResult(String data, boolean error);
     public native void nativeGameRequest(String request, boolean error);
     public native void nativeResponseInvitableFriends(String data, int page);
+    public native void nativeShareResult(String data, boolean canceled);
 
     public void logout()
     {
@@ -111,6 +118,25 @@ public class FacebookAdapter extends ActivityObserver
                     }
                 }
         );
+
+
+        shareDialog = new ShareDialog(_activity);
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                nativeShareResult(result.getPostId(), false);
+            }
+
+            @Override
+            public void onCancel() {
+                nativeShareResult("", true);
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                nativeShareResult("", true);
+            }
+        });
     }
 
     public FacebookAdapter(Activity a)
@@ -188,6 +214,27 @@ public class FacebookAdapter extends ActivityObserver
 
         return false;
     }
+
+    public void shareLink(final String url, final String quote) {
+
+        _activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if (ShareDialog.canShow(ShareLinkContent.class)) {
+                    ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                            .setContentUrl(Uri.parse(url))
+                            .build();
+                    shareDialog.show(linkContent);
+                }
+                else
+                {
+                    nativeShareResult("", true);
+                }
+            }
+        });
+    }
+
 
     public void newMeRequest() {
         Log.i(TAG, "newMeRequest");

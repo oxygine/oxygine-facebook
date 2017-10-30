@@ -11,7 +11,8 @@
 #endif
 
 #include "ox/json.hpp"
-
+#include "ox/oxygine.hpp"
+#include "ox/ThreadDispatcher.hpp"
 
 namespace facebook
 {
@@ -26,8 +27,11 @@ namespace facebook
         cbNewMeRequest  fNewMeRequest = []() {};
         cbGetFriends    fGetFriends = []() {};
         cbGameRequest   fGameRequest = [](const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData) {};
-
         cbRequestInvitableFriends fRequestInvitableFriends = [](const vector<string>&) {};
+        cbShareLink     fShareLink = [](const string &, const string &) { core::getMainThreadDispatcher().postCallback([]() {
+            ShareEvent ev(true);
+            dispatch(&ev);
+        }); };
 
         cbIsLoggedIn     fIsLoggedIn = []() {return false; };
         cbGetUserID      fGetUserID = []() {return std::string(""); };
@@ -63,6 +67,7 @@ namespace facebook
         fGameRequest = jniFacebookGameRequest;
         fGetAccessTokenPermissions = jniFacebookGetAccessTokenPermissions;
         fRequestInvitableFriends = jniFacebookRequestInvitableFriends;
+        fShareLink = jniFacebookShareLink;
 #elif TARGET_OS_IPHONE
         fInit = iosFacebookInit;
         fFree = iosFacebookFree;
@@ -77,6 +82,7 @@ namespace facebook
         fGameRequest = iosFacebookGameRequest;
         fGetAccessTokenPermissions = iosFacebookGetPermissions;
         fRequestInvitableFriends = iosFacebookRequestInvitableFriends;
+        fShareLink = iosFacebookShareLink;
 #else
         fInit = facebookSimulatorInit;
         fFree = facebookSimulatorFree;
@@ -90,7 +96,7 @@ namespace facebook
         fGetAppID = facebookSimulatorGetAppID;
         fGameRequest = facebookSimulatorGameRequest;
         fGetAccessTokenPermissions = facebookSimulatorGetAccessTokenPermissions;
-        fRequestInvitableFriends = facebookSimulatorInvitableFriendsRequest;
+        fRequestInvitableFriends = facebookSimulatorInvitableFriendsRequest;        
 #endif
 
 
@@ -163,6 +169,12 @@ namespace facebook
     {
         log::messageln("facebook::requestInvitableFriends");
         fRequestInvitableFriends(exclude);
+    }
+
+    void shareLink(const string &url, const string &quote)
+    {
+        log::messageln("facebook::shareLink");
+        fShareLink(url, quote);
     }
 
     void getFriends()
