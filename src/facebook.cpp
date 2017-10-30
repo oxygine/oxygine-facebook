@@ -239,6 +239,9 @@ namespace facebook
             }
         }
     }
+    
+    
+    ShareEvent::ShareEvent(bool Canceled):Event(EVENT), canceled(Canceled){}
 
     namespace internal
     {

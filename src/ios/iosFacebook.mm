@@ -18,7 +18,7 @@ namespace oxygine
     extern bool _renderEnabled;
 }
 
-@interface FacebookRequests:NSObject<FBSDKGameRequestDialogDelegate>
+@interface FacebookRequests:NSObject<FBSDKGameRequestDialogDelegate, FBSDKSharingDelegate>
 {
 }
 @end
@@ -80,6 +80,30 @@ namespace oxygine
     facebook::internal::gameRequestResult("", true);
 }
 #pragma mark -
+
+
+- (void)sharer:(id<FBSDKSharing>)sharer didCompleteWithResults:(NSDictionary *)results
+{
+    _renderEnabled = true;
+    facebook::ShareEvent ev(false);
+    facebook::internal::dispatch(&ev);
+}
+
+- (void)sharer:(id<FBSDKSharing>)sharer didFailWithError:(NSError *)error
+{
+    _renderEnabled = true;
+    
+    facebook::ShareEvent ev(true);
+    facebook::internal::dispatch(&ev);
+}
+
+- (void)sharerDidCancel:(id<FBSDKSharing>)sharer
+{
+    _renderEnabled = true;
+    
+    facebook::ShareEvent ev(true);
+    facebook::internal::dispatch(&ev);
+}
 
 @end
 
@@ -342,4 +366,17 @@ void iosFacebookGameRequest(const string &title, const string &text, const vecto
     dialog.delegate = requests;
     
     [dialog show];
+}
+
+void iosFacebookShareLink(const string &url, const string &quote, const string& userData)
+{
+    _renderEnabled = false;
+    
+    FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
+    content.contentURL = [NSURL URLWithString:[NSString stringWithUTF8String:url.c_str()]];
+    content.quote = [NSString stringWithUTF8String:quote.c_str()];
+    
+    [FBSDKShareDialog showFromViewController:getViewcontrollerForFB()
+                                 withContent:content
+                                    delegate:requests];
 }

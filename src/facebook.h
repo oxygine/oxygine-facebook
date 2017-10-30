@@ -92,6 +92,15 @@ namespace facebook
         string request;
         vector<string> to;
     };
+    
+    class ShareEvent: public Event
+    {
+    public:
+        enum {EVENT = sysEventID('f', 'S', 'h')};
+        bool canceled;
+        
+        ShareEvent(bool canceled);
+    };
 
     spEventDispatcher dispatcher();
 
