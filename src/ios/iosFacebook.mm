@@ -368,7 +368,7 @@ void iosFacebookGameRequest(const string &title, const string &text, const vecto
     [dialog show];
 }
 
-void iosFacebookShareLink(const string &url, const string &quote, const string& userData)
+void iosFacebookShareLink(const string &url, const string &quote)
 {
     _renderEnabled = false;
     

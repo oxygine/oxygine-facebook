@@ -25,6 +25,6 @@ std::string iosFacebookGetAppID();
 std::vector<std::string> iosFacebookGetPermissions();
 void iosFacebookRequestInvitableFriends(const std::vector<std::string>&);
 void iosFacebookRequestMe();
-void iosFacebookShareLink(const std::string &url, const std::string &quote, const std::string& userData);
+void iosFacebookShareLink(const std::string &url, const std::string &quote);
 
 #endif /* Header_h */
