@@ -263,7 +263,11 @@ void facebookSimulatorFree()
 
 void facebookSimulatorNewMeRequest()
 {
-    string data = "{\"id\":\"YOUR_FACEBOOK_ID\",\"link\" : \"https://www.facebook.com/app_scoped_user_id/YOUR_FACEBOOK_ID/\",\"name\" : \"YOUR NAME\"}";
+    Json::Value me(Json::objectValue);
+    me["id"] = _userID;
+    me["name"] = "Your Name";
+    Json::StyledWriter writer;
+    string data = Json::StyledWriter().write(me);
     facebook::internal::newMeRequestResult(data, false);
 }
 
