@@ -374,7 +374,8 @@ void iosFacebookShareLink(const string &url, const string &quote)
     
     FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
     content.contentURL = [NSURL URLWithString:[NSString stringWithUTF8String:url.c_str()]];
-    content.quote = [NSString stringWithUTF8String:quote.c_str()];
+    if (!quote.empty())
+        content.quote = [NSString stringWithUTF8String:quote.c_str()];
     
     [FBSDKShareDialog showFromViewController:getViewcontrollerForFB()
                                  withContent:content
