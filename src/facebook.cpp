@@ -29,7 +29,7 @@ namespace facebook
         cbGameRequest   fGameRequest = [](const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData) {};
         cbRequestInvitableFriends fRequestInvitableFriends = [](const vector<string>&) {};
         cbShareLink     fShareLink = [](const string &, const string &) { core::getMainThreadDispatcher().postCallback([]() {
-            ShareEvent ev(true);
+            ShareEvent ev(false);
             dispatch(&ev);
         }); };
 
