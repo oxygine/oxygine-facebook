@@ -13,6 +13,7 @@ bool _isLoggedIn = true;
 string _facebookToken = "";
 string _userID = "";
 string _appID = "";
+string _permissions = "";
 
 Json::Value _facebook(Json::objectValue);
 
@@ -20,6 +21,7 @@ std::string getValue(const Json::Value& obj, const char* key);
 static void save()
 {
     _facebook["loggedIn"] = _isLoggedIn;
+    _facebook["permissions"] = _permissions;
 
     Json::StyledWriter writer;
     string s = writer.write(_facebook);
@@ -158,13 +160,17 @@ void facebookSimulatorLikeUpdate(float x, float y)
     _btnLike->setPosition(x * getStage()->getWidth(), y * getStage()->getHeight());
 }
 
-void facebookSimulatorLogin(const vector<string>&)
+void facebookSimulatorLogin(const vector<string>& perm)
 {
-    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([](Event*)
+    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([=](Event*)
     {
         spFacebookDialog dialog = new FacebookDialog;
         dialog->setScale(1.0f / getStage()->getScaleX());
         dialog->setSize(500, 300);
+        string st;
+        for (auto s : perm)
+            st += s + "\n";
+        dialog->setTitle(st);
         getStage()->addChild(dialog);
 
         FacebookDialog* ptr = dialog.get();
@@ -178,6 +184,18 @@ void facebookSimulatorLogin(const vector<string>&)
             _isLoggedIn = true;
             _facebookToken = getValue(_facebook, "token");
             _userID = getValue(_facebook, "userID");
+
+            string str = _permissions;
+            if (!perm.empty())
+            {
+                if (!str.empty())
+                    str += ",";
+                for (auto n : perm)
+                    str = str + n + ",";
+                if (!str.empty())
+                    str.pop_back();
+            }
+            _permissions = str;// getValue(_facebook, "permissions");
             save();
 
             facebook::internal::loginResult(true);
@@ -197,6 +215,7 @@ void facebookSimulatorLogout()
 {
     _facebookToken.clear();
     _userID.clear();
+    _permissions.clear();
     _isLoggedIn = false;
     save();
 }
@@ -215,6 +234,7 @@ void facebookSimulatorInit()
     _isLoggedIn = false;
     _facebookToken = "";
     _userID = "";
+    _permissions = "";
     _appID = "";
 
     file::buffer bf;
@@ -232,6 +252,9 @@ void facebookSimulatorInit()
             _isLoggedIn = true;
             _facebookToken = getValue(_facebook, "token");
             _userID = getValue(_facebook, "userID");
+            _permissions = getValue(_facebook, "permissions");
+            if (_permissions.empty())
+                _permissions = "public_profile";
         }
     }
 
@@ -311,9 +334,65 @@ void facebookSimulatorGameRequest(const std::string& title, const std::string& t
     });
 }
 
+void facebookSimulatorShareLink(const string &link, const string &quote)
+{
+    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([=](Event*)
+    {
+        spFacebookDialog dialog = new FacebookDialog;
+        dialog->setScale(1.0f / getStage()->getScaleX());
+        dialog->setSize(500, 300);
+        dialog->setTitle(link);
+        getStage()->addChild(dialog);
+
+        FacebookDialog* ptr = dialog.get();
+
+        dialog->_btnOk->addClickListener([=](Event * e)
+        {
+            ptr->detach();
+            e->removeListener();
+
+            facebook::ShareEvent se(false);
+            facebook::internal::dispatch(&se);
+        });
+
+        dialog->_btnCancel->addClickListener([=](Event * e)
+        {
+            ptr->detach();
+            e->removeListener();
+
+            facebook::ShareEvent se(true);
+            facebook::internal::dispatch(&se);
+        });
+    });
+}
+
+static bool splitStrSep(const string& str, char sep, string& partA, string& partB, error_policy ep)
+{
+    string copy = str;
+    partA = str;
+
+    size_t pos = str.find_first_of(sep);
+    if (pos == str.npos)
+    {
+        handleErrorPolicy(ep, "can't split string: %s", str.c_str());
+        return false;
+    }
+
+    partA = copy.substr(0, pos);
+    partB = copy.substr(pos + 1, str.size() - pos - 1);
+    return true;
+}
+
 vector<string> facebookSimulatorGetAccessTokenPermissions()
 {
-    return { "public_profile", "user_friends" };
+    vector<string> perm;
+    string p;
+    string data = _permissions;
+    while (splitStrSep(data, ',', p, data, ep_ignore_error))
+        perm.push_back(p);
+    perm.push_back(data);
+
+    return perm;
 }
 
 void facebookSimulatorInvitableFriendsRequest(const vector<string>& exclude)

@@ -29,7 +29,7 @@ namespace facebook
         cbGameRequest   fGameRequest = [](const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData) {};
         cbRequestInvitableFriends fRequestInvitableFriends = [](const vector<string>&) {};
         cbShareLink     fShareLink = [](const string &, const string &) { core::getMainThreadDispatcher().postCallback([]() {
-            ShareEvent ev(false);
+            ShareEvent ev(true);
             dispatch(&ev);
         }); };
 
@@ -96,7 +96,8 @@ namespace facebook
         fGetAppID = facebookSimulatorGetAppID;
         fGameRequest = facebookSimulatorGameRequest;
         fGetAccessTokenPermissions = facebookSimulatorGetAccessTokenPermissions;
-        fRequestInvitableFriends = facebookSimulatorInvitableFriendsRequest;        
+        fRequestInvitableFriends = facebookSimulatorInvitableFriendsRequest;    
+        fShareLink = facebookSimulatorShareLink;
 #endif
 
 
