@@ -118,7 +118,8 @@ namespace facebook
 
         fFree();
 
-        _dispatcher->removeAllEventListeners();
+        if (_dispatcher)
+            _dispatcher->removeAllEventListeners();
         _dispatcher = 0;
         log::messageln("facebook::free done");
     }
