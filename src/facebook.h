@@ -112,7 +112,7 @@ namespace facebook
     void gameRequest(const string& title, const string& text, const vector<string>& dest, const string& objectID, const string& userData);
     void requestInvitableFriends(const vector<string>& exclude);
     void shareLink(const string &url, const string &quote);
-
+    void logPurchase(const double& price, const string& currency);
 
     bool appInviteDialog(const string& appLinkUrl, const string& previewImageUrl);
 
@@ -132,7 +132,7 @@ namespace facebook
         typedef void(*cbGetFriends)();
         typedef void(*cbRequestInvitableFriends)(const vector<string>&);
         typedef void(*cbShareLink)(const string& url, const string& quote);
-
+        typedef void(*cbLogPurchase)(const double& price, const string& currency);
         typedef bool(*cbIsLoggedIn)();
         typedef std::string(*cbGetUserID)();
         typedef std::string(*cbGetAccessToken)();
@@ -154,6 +154,7 @@ namespace facebook
         extern cbGetAppID                   fGetAppID;
         extern cbGetAccessTokenPermissions  fGetAccessTokenPermissions;
         extern cbShareLink                  fShareLink;
+        extern cbLogPurchase                fLogPurchase;
 
         void newMeRequestResult(const string& data, bool error);
         void loginResult(bool value);

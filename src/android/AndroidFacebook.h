@@ -14,6 +14,7 @@ void jniFacebookLogin(const std::vector<std::string>& permissions);
 void jniFacebookLogout();
 void jniFacebookNewMeRequest();
 bool jniFacebookAppInviteDialog(const string& appLinkUrl, const string& previewImageUrl);
+void jniFacebookLogPurchase(const double& price, const string& currency);
 
 string jniFacebookGetAccessToken();
 vector<string> jniFacebookGetAccessTokenPermissions();

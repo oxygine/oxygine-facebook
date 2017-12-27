@@ -262,6 +262,22 @@ bool jniFacebookAppInviteDialog(const string& appLinkUrl, const string& previewI
     return true;
 }
 
+void jniFacebookLogPurchase(const double& price, const string& currency)
+{
+    if (!isFacebookEnabled())
+        return;
+
+    JNIEnv* env = jniGetEnv();
+    LOCAL_REF_HOLDER(env);
+
+    jmethodID jlogPurchase = env->GetMethodID(_jFacebookClass, "logPurchase", "(DLjava/lang/String;)V");
+    JNI_NOT_NULL(jlogPurchase);
+
+    jstring jcurrency = env->NewStringUTF(currency.c_str());
+
+    env->CallVoidMethod(_jFacebookObject, jlogPurchase, price, jcurrency);
+}
+
 void jniFacebookGetFriends()
 {
     if (!isFacebookEnabled())

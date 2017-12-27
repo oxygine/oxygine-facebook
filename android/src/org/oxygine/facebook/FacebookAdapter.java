@@ -25,6 +25,8 @@ import org.oxygine.lib.extension.ActivityObserver;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.util.*;
 
@@ -40,7 +42,7 @@ public class FacebookAdapter extends ActivityObserver
     CallbackManager callbackManager;
     Activity activity;
     JSONObject userData;
-
+    AppEventsLogger logger;
     GameRequestDialog requestDialog;
     ShareDialog shareDialog;
 
@@ -145,6 +147,7 @@ public class FacebookAdapter extends ActivityObserver
 
         activity = a;
         FacebookSdk.sdkInitialize(a.getApplicationContext());
+        logger = AppEventsLogger.newLogger(a);
 
         callbackManager = CallbackManager.Factory.create();
 
@@ -184,6 +187,20 @@ public class FacebookAdapter extends ActivityObserver
             }
         };
     }
+
+    public void logPurchase(final double price, final String currency)
+    {
+        if (logger != null)
+        {
+            Log.i(TAG, "logPurchase: " + String.valueOf(price) + " " + currency);
+            logger.logPurchase(BigDecimal.valueOf(price), Currency.getInstance(currency));
+        }
+        else
+        {
+            Log.e(TAG, "logPurchase: logger is null");
+        }
+    }
+
 
     public void newMyFriendsRequest() {
         Log.i(TAG, "newMyFriendsRequest");

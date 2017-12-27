@@ -38,6 +38,7 @@ namespace facebook
         cbGetAccessToken fGetAccessToken = []() {return std::string(""); };
         cbGetAppID       fGetAppID = []() {return std::string(""); };
         cbGetAccessTokenPermissions fGetAccessTokenPermissions = []() {return std::vector<string>();};
+        cbLogPurchase    fLogPurchase = [](const double& price, const string& currency) {};
     }
 
     using namespace internal;
@@ -68,6 +69,7 @@ namespace facebook
         fGetAccessTokenPermissions = jniFacebookGetAccessTokenPermissions;
         fRequestInvitableFriends = jniFacebookRequestInvitableFriends;
         fShareLink = jniFacebookShareLink;
+        fLogPurchase = jniFacebookLogPurchase;
 #elif TARGET_OS_IPHONE
         fInit = iosFacebookInit;
         fFree = iosFacebookFree;
@@ -177,6 +179,13 @@ namespace facebook
     {
         log::messageln("facebook::shareLink");
         fShareLink(url, quote);
+    }
+
+    void logPurchase(const double & price, const string & currency)
+    {
+        log::messageln("facebook::logPurchase");
+        fLogPurchase(price, currency);
+        log::messageln("facebook::logPurchase done");
     }
 
     void getFriends()

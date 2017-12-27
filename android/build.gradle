@@ -21,7 +21,7 @@ apply plugin: 'com.android.library'
 
 dependencies {
         compile(project(':oxygine-extension'))
-        compile 'com.facebook.android:facebook-android-sdk:4.+'
+        compile 'com.facebook.android:facebook-android-sdk:4.28.+'
 }
 
 android {
