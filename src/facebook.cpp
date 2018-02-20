@@ -103,18 +103,18 @@ namespace facebook
 #endif
 
 
-        log::messageln("facebook::init");
+        logs::messageln("facebook::init");
         OX_ASSERT(_dispatcher == 0);
         _dispatcher = new EventDispatcher;
 
         fInit();
 
-        log::messageln("facebook::init done");
+        logs::messageln("facebook::init done");
     }
 
     void free()
     {
-        log::messageln("facebook::free");
+        logs::messageln("facebook::free");
 
         OX_ASSERT(_dispatcher);
 
@@ -123,29 +123,29 @@ namespace facebook
         if (_dispatcher)
             _dispatcher->removeAllEventListeners();
         _dispatcher = 0;
-        log::messageln("facebook::free done");
+        logs::messageln("facebook::free done");
     }
 
     void login(const vector<string>& permissions)
     {
-        log::messageln("facebook::login");
+        logs::messageln("facebook::login");
 
         fLogin(permissions);
 
-        log::messageln("facebook::login done");
+        logs::messageln("facebook::login done");
     }
 
     void logout()
     {
 
-        log::messageln("facebook::logout");
+        logs::messageln("facebook::logout");
         fLogout();
-        log::messageln("facebook::logout done");
+        logs::messageln("facebook::logout done");
     }
 
     bool appInviteDialog(const string& appLinkUrl, const string& previewImageUrl)
     {
-        log::messageln("facebook::AppInviteDialog");
+        logs::messageln("facebook::AppInviteDialog");
 
 #ifdef __ANDROID__
         return jniFacebookAppInviteDialog(appLinkUrl, previewImageUrl);
@@ -159,9 +159,9 @@ namespace facebook
 
     void newMeRequest()
     {
-        log::messageln("facebook::newMeRequest");
+        logs::messageln("facebook::newMeRequest");
         fNewMeRequest();
-        log::messageln("facebook::newMeRequest done");
+        logs::messageln("facebook::newMeRequest done");
     }
 
     void gameRequest(const string& title, const string& text, const vector<string>& dest, const string& objectID, const string& userData)
@@ -171,64 +171,64 @@ namespace facebook
 
     void requestInvitableFriends(const vector<string>& exclude)
     {
-        log::messageln("facebook::requestInvitableFriends");
+        logs::messageln("facebook::requestInvitableFriends");
         fRequestInvitableFriends(exclude);
     }
 
     void shareLink(const string &url, const string &quote)
     {
-        log::messageln("facebook::shareLink");
+        logs::messageln("facebook::shareLink");
         fShareLink(url, quote);
     }
 
     void logPurchase(const double & price, const string & currency)
     {
-        log::messageln("facebook::logPurchase");
+        logs::messageln("facebook::logPurchase");
         fLogPurchase(price, currency);
-        log::messageln("facebook::logPurchase done");
+        logs::messageln("facebook::logPurchase done");
     }
 
     void getFriends()
     {
-        log::messageln("facebook::getFriends");
+        logs::messageln("facebook::getFriends");
         fGetFriends();
-        log::messageln("facebook::getFriends done");
+        logs::messageln("facebook::getFriends done");
     }
 
     bool isLoggedIn()
     {
-        log::messageln("facebook::isLoggined");
+        logs::messageln("facebook::isLoggined");
         return fIsLoggedIn();
     }
 
     string getAccessToken()
     {
-        log::messageln("facebook::getAccessToken");
+        logs::messageln("facebook::getAccessToken");
         string token = fGetAccessToken();
-        log::messageln("%s", token.c_str());
+        logs::messageln("%s", token.c_str());
         return token;
     }
 
     vector<string> getAccessTokenPermissions()
     {
-        log::messageln("facebook::getAccessToken");
+        logs::messageln("facebook::getAccessToken");
         vector<string> res = fGetAccessTokenPermissions();
         string str;
         for (const auto& s : res)
             str += s + ",";
         if (!str.empty())
             str.pop_back();
-        log::messageln("permissions: %s", str.c_str());
+        logs::messageln("permissions: %s", str.c_str());
 
         return res;
     }
 
     string getUserID()
     {
-        log::messageln("facebook::getUserID");
+        logs::messageln("facebook::getUserID");
         string id = fGetUserID();
-
-        log::messageln("%s", id.c_str());
+        
+        logs::messageln("%s", id.c_str());
 
         return id;
     }
@@ -270,7 +270,7 @@ namespace facebook
     {
         void newToken(const string& value)
         {
-            log::messageln("facebook::internal::newToken %s", value.c_str());
+            logs::messageln("facebook::internal::newToken %s", value.c_str());
             TokenEvent ev;
             ev.token = value;
             if (_dispatcher)
@@ -279,7 +279,7 @@ namespace facebook
 
         void loginResult(bool value)
         {
-            log::messageln("facebook::internal::loginResult %d", value);
+            logs::messageln("facebook::internal::loginResult %d", value);
             LoginEvent ev;
             ev.isLoggedIn = value;
             if (_dispatcher)
@@ -288,7 +288,7 @@ namespace facebook
 
         void newMeRequestResult(const string& data, bool error)
         {
-            log::messageln("facebook::internal::newMeRequestResult %s", data.c_str());
+            logs::messageln("facebook::internal::newMeRequestResult %s", data.c_str());
 
             NewMeRequestEvent event;
             Json::Reader reader;
@@ -297,7 +297,7 @@ namespace facebook
             if (!parsingSuccessful || error)
             {
                 event.error = true;
-                log::messageln("newMeRequestResult error %s", error ? "response error" : "parse error");
+                logs::messageln("newMeRequestResult error %s", error ? "response error" : "parse error");
                 return;
             }
             else
@@ -311,12 +311,12 @@ namespace facebook
 
         void newMyFriendsRequestResult(const string& data, bool error)
         {
-            log::messageln("facebook::internal::newMyFriendsRequestResult %s", data.c_str());
+            logs::messageln("facebook::internal::newMyFriendsRequestResult %s", data.c_str());
         }
 
         void gameRequestResult(const string& data, bool canceled)
         {
-            log::messageln("facebook::internal::gameRequestResult %s", data.c_str());
+            logs::messageln("facebook::internal::gameRequestResult %s", data.c_str());
             GameRequestEvent ev(data, canceled);
             if (_dispatcher)
                 _dispatcher->dispatchEvent(&ev);

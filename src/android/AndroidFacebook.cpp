@@ -117,7 +117,7 @@ void jniFacebookInit()
     }
     catch (const notFound&)
     {
-        log::error("jniFacebookInit failed, class/member not found");
+        logs::error("jniFacebookInit failed, class/member not found");
     }
 }
 

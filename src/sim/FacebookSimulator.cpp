@@ -229,7 +229,7 @@ std::string getValue(const Json::Value& obj, const char* key)
 
 void facebookSimulatorInit()
 {
-    log::messageln("Facebook Simulator Init");
+    logs::messageln("Facebook Simulator Init");
 
     _isLoggedIn = false;
     _facebookToken = "";
