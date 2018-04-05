@@ -17,6 +17,12 @@ string _permissions = "";
 
 Json::Value _facebook(Json::objectValue);
 
+#if OXYGINE_VERSION >= 10
+#define OUTX TouchEvent::OUTX
+#else
+#define OUTX TouchEvent::OUT
+#endif
+
 std::string getValue(const Json::Value& obj, const char* key);
 static void save()
 {
@@ -43,7 +49,7 @@ public:
         setResAnim(DebugActor::resSystem->getResAnim("btn"));
 
         addEventListener(TouchEvent::OVER, CLOSURE(this, &Btn::touch));
-        addEventListener(TouchEvent::OUT, CLOSURE(this, &Btn::touch));
+        addEventListener(OUTX, CLOSURE(this, &Btn::touch));
 
         setSize(70, 30);
     }
@@ -57,7 +63,7 @@ public:
     {
         if (ev->type == TouchEvent::OVER)
             setColor(Color::GreenYellow);
-        if (ev->type == TouchEvent::OUT)
+        if (ev->type == OUTX)
             setColor(Color::Green);
     }
 
