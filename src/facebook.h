@@ -31,7 +31,10 @@ namespace facebook
     public:
         enum { EVENT = sysEventID('f', 'b', 'l')};
         LoginEvent() : Event(EVENT) {}
+
         bool isLoggedIn = false;
+		string userID;
+		string token;
     };
 
     class FriendsEvent : public Event
@@ -157,7 +160,7 @@ namespace facebook
         extern cbLogPurchase                fLogPurchase;
 
         void newMeRequestResult(const string& data, bool error);
-        void loginResult(bool value);
+        void loginResult(bool value, const string& userID, const string &token);
         void newToken(const string& value);
         void newMyFriendsRequestResult(const string& data, bool error);
 

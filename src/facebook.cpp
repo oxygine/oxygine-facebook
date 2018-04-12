@@ -277,11 +277,13 @@ namespace facebook
                 _dispatcher->dispatchEvent(&ev);
         }
 
-        void loginResult(bool value)
+        void loginResult(bool value, const string& userID, const string &token)
         {
             logs::messageln("facebook::internal::loginResult %d", value);
             LoginEvent ev;
             ev.isLoggedIn = value;
+			ev.userID = userID;
+			ev.token = token;
             if (_dispatcher)
                 _dispatcher->dispatchEvent(&ev);
         }
