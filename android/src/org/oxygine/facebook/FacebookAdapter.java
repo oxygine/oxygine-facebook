@@ -46,7 +46,7 @@ public class FacebookAdapter extends ActivityObserver
     GameRequestDialog requestDialog;
     ShareDialog shareDialog;
 
-    public native void loginResult(boolean value);
+    public native void loginResult(boolean value, String id, String token);
     public native void newToken(String value);
     public native void newMyFriendsRequestResult(String data, boolean error);
     public native void newMeRequestResult(String data, boolean error);
@@ -157,19 +157,19 @@ public class FacebookAdapter extends ActivityObserver
                     public void onSuccess(LoginResult loginResult) {
                         Log.i(TAG, "Login::onSuccess");
                         //accessToken = loginResult.getAccessToken();
-                        loginResult(true);
+                        loginResult(true, loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken());
                     }
 
                     @Override
                     public void onCancel() {
                         Log.i(TAG, "Login::onCancel");
-                        loginResult(false);
+                        loginResult(false, null, null);
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
                         Log.i(TAG, "Login::onError");
-                        loginResult(false);
+                        loginResult(false, null, null);
                     }
                 });
 

@@ -279,7 +279,7 @@ namespace facebook
 
         void loginResult(bool value, const string& userID, const string &token)
         {
-            logs::messageln("facebook::internal::loginResult %d", value);
+            logs::messageln("facebook::internal::loginResult %d %s %s", value, userID.c_str(), token.c_str());
             LoginEvent ev;
             ev.isLoggedIn = value;
 			ev.userID = userID;

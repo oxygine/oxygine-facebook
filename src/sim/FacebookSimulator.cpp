@@ -204,7 +204,7 @@ void facebookSimulatorLogin(const vector<string>& perm)
             _permissions = str;// getValue(_facebook, "permissions");
             save();
 
-            facebook::internal::loginResult(true);
+            facebook::internal::loginResult(true, _userID, _facebookToken);
         });
 
         dialog->_btnCancel->addClickListener([ = ](Event * e)
@@ -212,7 +212,7 @@ void facebookSimulatorLogin(const vector<string>& perm)
             ptr->detach();
             e->removeListener();
 
-            facebook::internal::loginResult(false);
+            facebook::internal::loginResult(false, "", "");
         });
     });
 }

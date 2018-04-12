@@ -44,11 +44,14 @@ extern "C"
         });
     }
 
-    JNIEXPORT void JNICALL Java_org_oxygine_facebook_FacebookAdapter_loginResult(JNIEnv* env, jobject obj, jboolean value)
+    JNIEXPORT void JNICALL Java_org_oxygine_facebook_FacebookAdapter_loginResult(JNIEnv* env, jobject obj, jboolean value, jstring juserID, jstring jToken)
     {
+		string id    = jniGetString(env, juserID);
+		string token = jniGetString(env, jToken);
+
         core::getMainThreadDispatcher().postCallback([ = ]()
         {
-            facebook::internal::loginResult((bool) value) ;
+            facebook::internal::loginResult((bool) value, id, token);
         });
     }
 
