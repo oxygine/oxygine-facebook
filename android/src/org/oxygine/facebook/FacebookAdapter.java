@@ -330,11 +330,13 @@ public class FacebookAdapter extends ActivityObserver
         if (token == null)
             return "";
 
+        /*
         if (token.isExpired())
         {
             Log.i(TAG, "getAccessToken::expired " + token.getToken());
             return "";
         }
+        */
 
         return token.getToken();
     }
