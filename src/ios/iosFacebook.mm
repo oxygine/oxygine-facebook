@@ -156,9 +156,9 @@ void iosFacebookLogin(const vector<string> &permissions)
          _renderEnabled = true;
          
          if (error) {
-             facebook::internal::loginResult(false, 0, 0);
+             facebook::internal::loginResult(false, "", "");
          } else if (result.isCancelled) {
-             facebook::internal::loginResult(false, 0, 0);
+             facebook::internal::loginResult(false, "", "");
          } else {
              NSLog(@"Logged in");
              FBSDKAccessToken *token = result.token;
