@@ -46,8 +46,8 @@ extern "C"
 
     JNIEXPORT void JNICALL Java_org_oxygine_facebook_FacebookAdapter_loginResult(JNIEnv* env, jobject obj, jboolean value, jstring juserID, jstring jToken)
     {
-		string id    = jniGetString(env, juserID);
-		string token = jniGetString(env, jToken);
+        string id    = jniGetString(env, juserID);
+        string token = jniGetString(env, jToken);
 
         core::getMainThreadDispatcher().postCallback([ = ]()
         {
@@ -69,7 +69,7 @@ extern "C"
     {
         string data = jniGetString(env, jData);
 
-        core::getMainThreadDispatcher().postCallback([=]()
+        core::getMainThreadDispatcher().postCallback([ = ]()
         {
             facebook::internal::gameRequestResult(data, (bool)error);
         });
@@ -79,7 +79,7 @@ extern "C"
     {
         string data = jniGetString(env, jData);
 
-        core::getMainThreadDispatcher().postCallback([=]()
+        core::getMainThreadDispatcher().postCallback([ = ]()
         {
             facebook::ShareEvent se((bool)canceled);
             facebook::internal::dispatch(&se);
@@ -366,7 +366,7 @@ void jniFacebookRequestInvitableFriends(const vector<string>& exc)
     env->CallVoidMethod(_jFacebookObject, jFn, arr);
 }
 
-void jniFacebookShareLink(const string &url, const string &quote)
+void jniFacebookShareLink(const string& url, const string& quote)
 {
     if (!isFacebookEnabled())
         return;

@@ -28,10 +28,14 @@ namespace facebook
         cbGetFriends    fGetFriends = []() {};
         cbGameRequest   fGameRequest = [](const string& title, const string& text, const vector<string>& dest, const string& objectID, const std::string& userData) {};
         cbRequestInvitableFriends fRequestInvitableFriends = [](const vector<string>&) {};
-        cbShareLink     fShareLink = [](const string &, const string &) { core::getMainThreadDispatcher().postCallback([]() {
-            ShareEvent ev(true);
-            dispatch(&ev);
-        }); };
+        cbShareLink     fShareLink = [](const string&, const string&)
+        {
+            core::getMainThreadDispatcher().postCallback([]()
+            {
+                ShareEvent ev(true);
+                dispatch(&ev);
+            });
+        };
 
         cbIsLoggedIn     fIsLoggedIn = []() {return false; };
         cbGetUserID      fGetUserID = []() {return std::string(""); };
@@ -98,7 +102,7 @@ namespace facebook
         fGetAppID = facebookSimulatorGetAppID;
         fGameRequest = facebookSimulatorGameRequest;
         fGetAccessTokenPermissions = facebookSimulatorGetAccessTokenPermissions;
-        fRequestInvitableFriends = facebookSimulatorInvitableFriendsRequest;    
+        fRequestInvitableFriends = facebookSimulatorInvitableFriendsRequest;
         fShareLink = facebookSimulatorShareLink;
 #endif
 
@@ -175,13 +179,13 @@ namespace facebook
         fRequestInvitableFriends(exclude);
     }
 
-    void shareLink(const string &url, const string &quote)
+    void shareLink(const string& url, const string& quote)
     {
         logs::messageln("facebook::shareLink");
         fShareLink(url, quote);
     }
 
-    void logPurchase(const double & price, const string & currency)
+    void logPurchase(const double& price, const string& currency)
     {
         logs::messageln("facebook::logPurchase");
         fLogPurchase(price, currency);
@@ -227,7 +231,7 @@ namespace facebook
     {
         logs::messageln("facebook::getUserID");
         string id = fGetUserID();
-        
+
         logs::messageln("%s", id.c_str());
 
         return id;
@@ -262,9 +266,9 @@ namespace facebook
             }
         }
     }
-    
-    
-    ShareEvent::ShareEvent(bool Canceled):Event(EVENT), canceled(Canceled){}
+
+
+    ShareEvent::ShareEvent(bool Canceled): Event(EVENT), canceled(Canceled) {}
 
     namespace internal
     {
@@ -277,13 +281,13 @@ namespace facebook
                 _dispatcher->dispatchEvent(&ev);
         }
 
-        void loginResult(bool value, const string& userID, const string &token)
+        void loginResult(bool value, const string& userID, const string& token)
         {
             logs::messageln("facebook::internal::loginResult %d %s %s", value, userID.c_str(), token.c_str());
             LoginEvent ev;
             ev.isLoggedIn = value;
-			ev.userID = userID;
-			ev.token = token;
+            ev.userID = userID;
+            ev.token = token;
             if (_dispatcher)
                 _dispatcher->dispatchEvent(&ev);
         }

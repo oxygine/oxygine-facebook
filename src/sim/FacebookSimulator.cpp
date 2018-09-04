@@ -168,7 +168,7 @@ void facebookSimulatorLikeUpdate(float x, float y)
 
 void facebookSimulatorLogin(const vector<string>& perm)
 {
-    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([=](Event*)
+    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([ = ](Event*)
     {
         spFacebookDialog dialog = new FacebookDialog;
         dialog->setScale(1.0f / getStage()->getScaleX());
@@ -340,9 +340,9 @@ void facebookSimulatorGameRequest(const std::string& title, const std::string& t
     });
 }
 
-void facebookSimulatorShareLink(const string &link, const string &quote)
+void facebookSimulatorShareLink(const string& link, const string& quote)
 {
-    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([=](Event*)
+    getStage()->addTween(TweenDummy(), 1000)->addDoneCallback([ = ](Event*)
     {
         spFacebookDialog dialog = new FacebookDialog;
         dialog->setScale(1.0f / getStage()->getScaleX());
@@ -352,7 +352,7 @@ void facebookSimulatorShareLink(const string &link, const string &quote)
 
         FacebookDialog* ptr = dialog.get();
 
-        dialog->_btnOk->addClickListener([=](Event * e)
+        dialog->_btnOk->addClickListener([ = ](Event * e)
         {
             ptr->detach();
             e->removeListener();
@@ -361,7 +361,7 @@ void facebookSimulatorShareLink(const string &link, const string &quote)
             facebook::internal::dispatch(&se);
         });
 
-        dialog->_btnCancel->addClickListener([=](Event * e)
+        dialog->_btnCancel->addClickListener([ = ](Event * e)
         {
             ptr->detach();
             e->removeListener();

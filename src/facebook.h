@@ -33,8 +33,8 @@ namespace facebook
         LoginEvent() : Event(EVENT) {}
 
         bool isLoggedIn = false;
-		string userID;
-		string token;
+        string userID;
+        string token;
     };
 
     class FriendsEvent : public Event
@@ -95,13 +95,13 @@ namespace facebook
         string request;
         vector<string> to;
     };
-    
+
     class ShareEvent: public Event
     {
     public:
         enum {EVENT = sysEventID('f', 'S', 'h')};
         bool canceled;
-        
+
         ShareEvent(bool canceled);
     };
 
@@ -114,7 +114,7 @@ namespace facebook
     void newMeRequest();
     void gameRequest(const string& title, const string& text, const vector<string>& dest, const string& objectID, const string& userData);
     void requestInvitableFriends(const vector<string>& exclude);
-    void shareLink(const string &url, const string &quote);
+    void shareLink(const string& url, const string& quote);
     void logPurchase(const double& price, const string& currency);
 
     bool appInviteDialog(const string& appLinkUrl, const string& previewImageUrl);
@@ -160,7 +160,7 @@ namespace facebook
         extern cbLogPurchase                fLogPurchase;
 
         void newMeRequestResult(const string& data, bool error);
-        void loginResult(bool value, const string& userID, const string &token);
+        void loginResult(bool value, const string& userID, const string& token);
         void newToken(const string& value);
         void newMyFriendsRequestResult(const string& data, bool error);
 
