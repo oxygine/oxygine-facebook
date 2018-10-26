@@ -108,7 +108,7 @@ namespace facebook
     spEventDispatcher dispatcher();
 
     bool isLoggedIn();
-    void login(const vector<string>& permissions);
+    void login(const vector<string>& permissions = vector<string>());
     void logout();
     void getFriends();
     void newMeRequest();

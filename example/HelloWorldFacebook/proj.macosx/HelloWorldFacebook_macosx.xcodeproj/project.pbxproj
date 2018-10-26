@@ -17,11 +17,10 @@
 		049B574A1871FBE900EF3C66 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 049B57491871FBE900EF3C66 /* Images.xcassets */; };
 		2DC477AC10D6C07B3FE008F6 /* ../src/example.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 360377333740D8A2FD15BBE6 /* ../src/example.cpp */; };
 		DA49ED8903C628BA578C8670 /* ../src/main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0BF9628FC8D38F9748F0CDEB /* ../src/main.cpp */; };
-		C8860D93875589970329DCCD /* ../data/fonts in Sources */ = {isa = PBXBuildFile; fileRef = 4DA100C319512824B7570663 /* ../data/fonts */; };
-		1E839D002B2BA83FC83A695A /* ../data/ident.free in Sources */ = {isa = PBXBuildFile; fileRef = 04FE4D4FB640E0DF92DFB865 /* ../data/ident.free */; };
+		C8860D93875589970329DCCD /* ../src/test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DA100C319512824B7570663 /* ../src/test.cpp */; };
+		1E839D002B2BA83FC83A695A /* ../data/fonts in Sources */ = {isa = PBXBuildFile; fileRef = 04FE4D4FB640E0DF92DFB865 /* ../data/fonts */; };
 		3A631A475DE035FC53ADE5EA /* ../data/images in Sources */ = {isa = PBXBuildFile; fileRef = 7F3B12E3C9D554D9FE28101D /* ../data/images */; };
 		CD59C69314E9E74CD0A11E03 /* ../data/res.xml in Sources */ = {isa = PBXBuildFile; fileRef = F6123B1E6FE4471A00F49751 /* ../data/res.xml */; };
-		EFF139F8BA484314F7AAF645 /* ../data/xmls in Sources */ = {isa = PBXBuildFile; fileRef = 5DE458993031811A4C7D28C1 /* ../data/xmls */; };
 
 		
 /* End PBXBuildFile section */
@@ -95,12 +94,12 @@
 		049B57501871FBE900EF3C66 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		360377333740D8A2FD15BBE6 /* ../src/example.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = example.cpp; path = ../src/example.cpp; sourceTree = "<group>"; };
 		0BF9628FC8D38F9748F0CDEB /* ../src/main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../src/main.cpp; sourceTree = "<group>"; };
-		BA41FC88D76540A6905224D6 /* ../src/example.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = example.h; path = ../src/example.h; sourceTree = "<group>"; };
-		4DA100C319512824B7570663 /* ../data/fonts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = folder; name = fonts; path = ../data/fonts; sourceTree = "<group>"; };
-		04FE4D4FB640E0DF92DFB865 /* ../data/ident.free */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wtf; name = ident.free; path = ../data/ident.free; sourceTree = "<group>"; };
+		4DA100C319512824B7570663 /* ../src/test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test.cpp; path = ../src/test.cpp; sourceTree = "<group>"; };
+		5DE458993031811A4C7D28C1 /* ../src/example.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = example.h; path = ../src/example.h; sourceTree = "<group>"; };
+		BA41FC88D76540A6905224D6 /* ../src/test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = test.h; path = ../src/test.h; sourceTree = "<group>"; };
+		04FE4D4FB640E0DF92DFB865 /* ../data/fonts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = folder; name = fonts; path = ../data/fonts; sourceTree = "<group>"; };
 		7F3B12E3C9D554D9FE28101D /* ../data/images */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = folder; name = images; path = ../data/images; sourceTree = "<group>"; };
 		F6123B1E6FE4471A00F49751 /* ../data/res.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wtf; name = res.xml; path = ../data/res.xml; sourceTree = "<group>"; };
-		5DE458993031811A4C7D28C1 /* ../data/xmls */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = folder; name = xmls; path = ../data/xmls; sourceTree = "<group>"; };
 
 		04A57D761871FFEB0068B1E5 /* oxygine_macosx.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = oxygine_macosx.xcodeproj; path = ../../../../oxygine-framework//oxygine/SDL/macosx/oxygine_macosx/oxygine_macosx.xcodeproj; sourceTree = "<group>"; };
 		04A57D7E1872012A0068B1E5 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = ../../../..//SDL/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
@@ -189,11 +188,9 @@
 		049B57381871FBE900EF3C66 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				4DA100C319512824B7570663 /* fonts */, 
-				04FE4D4FB640E0DF92DFB865 /* ident.free */, 
+				04FE4D4FB640E0DF92DFB865 /* fonts */, 
 				7F3B12E3C9D554D9FE28101D /* images */, 
 				F6123B1E6FE4471A00F49751 /* res.xml */, 
-				5DE458993031811A4C7D28C1 /* xmls */, 
 
 				049B57391871FBE900EF3C66 /* HelloWorldFacebook_macosx-Info.plist */,
 			);
@@ -205,7 +202,9 @@
 			children = (
 				360377333740D8A2FD15BBE6 /* example.cpp */, 
 				0BF9628FC8D38F9748F0CDEB /* main.cpp */, 
-				BA41FC88D76540A6905224D6 /* example.h */, 
+				4DA100C319512824B7570663 /* test.cpp */, 
+				5DE458993031811A4C7D28C1 /* example.h */, 
+				BA41FC88D76540A6905224D6 /* test.h */, 
 
 			);
 			name = src;
@@ -324,11 +323,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C8860D93875589970329DCCD /* fonts */, 
-				1E839D002B2BA83FC83A695A /* ident.free */, 
+				1E839D002B2BA83FC83A695A /* fonts */, 
 				3A631A475DE035FC53ADE5EA /* images */, 
 				CD59C69314E9E74CD0A11E03 /* res.xml */, 
-				EFF139F8BA484314F7AAF645 /* xmls */, 
 
 				049B574A1871FBE900EF3C66 /* Images.xcassets in Resources */,
 			);
@@ -343,6 +340,7 @@
 			files = (
 				2DC477AC10D6C07B3FE008F6 /* example.cpp */, 
 				DA49ED8903C628BA578C8670 /* main.cpp */, 
+				C8860D93875589970329DCCD /* test.cpp */, 
 
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -394,6 +392,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -428,6 +427,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;

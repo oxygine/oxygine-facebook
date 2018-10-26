@@ -13,8 +13,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="facebook">
-      <UniqueIdentifier>{bd69cdf6-8036-4d3f-8c0c-76ed9df30349}</UniqueIdentifier>
+    <Filter Include="oxygine-facebook">
+      <UniqueIdentifier>{f99a7192-ace1-4a5d-b02f-b65684e75a93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="oxygine-facebook\sim">
+      <UniqueIdentifier>{25b8349b-6609-44b1-93d6-886cd417addf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -24,28 +27,28 @@
     <ClCompile Include="../src/main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="../src/test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\facebook.cpp">
-      <Filter>facebook</Filter>
+      <Filter>oxygine-facebook</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\sim\FacebookSimulator.cpp">
-      <Filter>facebook</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\test.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>oxygine-facebook\sim</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../src/example.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="../src/test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\facebook.h">
-      <Filter>facebook</Filter>
+      <Filter>oxygine-facebook</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\sim\FacebookSimulator.h">
-      <Filter>facebook</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\test.h">
-      <Filter>Source Files</Filter>
+      <Filter>oxygine-facebook\sim</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

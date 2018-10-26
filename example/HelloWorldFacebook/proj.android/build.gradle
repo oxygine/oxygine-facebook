@@ -1,23 +1,19 @@
 buildscript {
     repositories {
-        mavenLocal()
+    	google()
+        mavenLocal()        
         mavenCentral()
-        jcenter()
+        jcenter()        
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:3.2.1'
     }
 }
 
 allprojects {
     repositories {
-        mavenCentral()
-    }
-
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-        }
+        google()
+        jcenter()
     }
 }
 
@@ -27,36 +23,13 @@ apply plugin: 'com.android.application'
 
 
 dependencies {
-    compile(project(':oxygine-extension'))
-    compile(project(':oxygine-lib')) { exclude module: 'oxygine-extension' }
-    compile 'com.facebook.android:facebook-android-sdk:4.+'
-    compile(project(':oxygine-facebook')) {
-        exclude module: "support-annotations"
-        exclude module: "support-v4"
-        transitive = true
-    }
+    implementation(project(':oxygine-extension'))
+    implementation(project(':oxygine-lib')) { exclude module: 'oxygine-extension' }
 }
 
 android {
-    enforceUniquePackageName=false
         
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
-
-    defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 23
-    }
-
-    buildTypes {
-        debug {
-            resValue "string", "fb_app_id", "136567916522144"
-        }
-        
-        release {
-            resValue "string", "fb_app_id", "136567916522144"
-        }
-    }
+    compileSdkVersion 26
 
 
     sourceSets {
@@ -69,8 +42,29 @@ android {
         }
     }
 
+    defaultConfig {
+    	minSdkVersion 19
+        targetSdkVersion 26
+
+        ndk {
+            abiFilters 'armeabi-v7a'//, 'arm64-v8a'
+        }
+
+        externalNativeBuild {
+            ndkBuild {
+                arguments 'NDK_MODULE_PATH+=../../../../'
+            }
+        }
+    }
+
+    externalNativeBuild {
+        ndkBuild {
+            path 'jni/Android.mk'
+        }
+    }
+
     aaptOptions {
         noCompress 'zip', 'ogg'
-        ignoreAssetsPattern "!*.dll:*.icf"
+        ignoreAssetsPattern "!*.dll"
     }
 }
