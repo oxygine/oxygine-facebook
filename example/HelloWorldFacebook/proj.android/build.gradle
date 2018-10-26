@@ -29,6 +29,17 @@ dependencies {
 
 android {
         
+
+    buildTypes {
+        debug {
+            resValue "string", "fb_app_id", "136567916522144"
+        }
+        
+        release {
+            resValue "string", "fb_app_id", "136567916522144"
+        }
+    }
+
     compileSdkVersion 26
 
 

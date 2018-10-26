@@ -3,3 +3,6 @@ project(':oxygine-lib').projectDir = new File('../../../..//oxygine-framework/ox
 
 include 'oxygine-extension'
 project(':oxygine-extension').projectDir = new File('../../../..//oxygine-framework/oxygine/SDL/android/extension')
+
+include 'oxygine-facebook'
+project(':oxygine-facebook').projectDir = new File('../../../../oxygine-facebook/android')

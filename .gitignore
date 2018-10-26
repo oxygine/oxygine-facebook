@@ -16,3 +16,4 @@ example/HelloWorldFacebook/proj.android/proj.android.iml
 example/HelloWorldFacebook/proj.win32/Debug_v141/
 *.user
 example/HelloWorldFacebook/proj.cmake/build/
+example/HelloWorldFacebook/proj.android/.externalNativeBuild/
