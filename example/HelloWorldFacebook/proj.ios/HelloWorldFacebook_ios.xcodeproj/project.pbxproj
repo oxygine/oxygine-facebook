@@ -30,6 +30,8 @@
 		4FA53B86218334F200035C9E /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FA53B82218334F200035C9E /* Bolts.framework */; };
 		4FA53B87218334F200035C9E /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FA53B83218334F200035C9E /* FBSDKLoginKit.framework */; };
 		4FA53B88218334F200035C9E /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FA53B84218334F200035C9E /* FBSDKCoreKit.framework */; };
+		4FA53B92218338F200035C9E /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FA53B91218338F200035C9E /* AppDelegate.mm */; };
+		4FA53B9421833A2000035C9E /* HelloWorldFacebook_ios-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4FA53B9321833A2000035C9E /* HelloWorldFacebook_ios-Info.plist */; };
 		9223FE7F1C2D913D000B1FDA /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9223FE7E1C2D913D000B1FDA /* GameController.framework */; };
 		AD18619B1D8EC97A0043AFA3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD18619A1D8EC97A0043AFA3 /* AVFoundation.framework */; };
 		C8860D93875589970329DCCD /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DA100C319512824B7570663 /* test.cpp */; };
@@ -103,6 +105,9 @@
 		4FA53B82218334F200035C9E /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = ../../../../../../../ios/app/Bolts.framework; sourceTree = "<group>"; };
 		4FA53B83218334F200035C9E /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../../../../../../../ios/app/FBSDKLoginKit.framework; sourceTree = "<group>"; };
 		4FA53B84218334F200035C9E /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../../../../../../../ios/app/FBSDKCoreKit.framework; sourceTree = "<group>"; };
+		4FA53B90218338F200035C9E /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ../src/ios/AppDelegate.h; sourceTree = "<group>"; };
+		4FA53B91218338F200035C9E /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = ../src/ios/AppDelegate.mm; sourceTree = "<group>"; };
+		4FA53B9321833A2000035C9E /* HelloWorldFacebook_ios-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "HelloWorldFacebook_ios-Info.plist"; path = "HelloWorldFacebook/HelloWorldFacebook_ios-Info.plist"; sourceTree = "<group>"; };
 		5DE458993031811A4C7D28C1 /* example.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = example.h; path = ../src/example.h; sourceTree = "<group>"; };
 		9223FE7E1C2D913D000B1FDA /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		AD18619A1D8EC97A0043AFA3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -154,6 +159,7 @@
 		04998CE317F8A933003441C3 = {
 			isa = PBXGroup;
 			children = (
+				4FA53B9321833A2000035C9E /* HelloWorldFacebook_ios-Info.plist */,
 				4FA53B732183345100035C9E /* oxygine-facebook */,
 				045D531C17F8BD5E00CC2C64 /* dependencies */,
 				04998D3917F8A9AA003441C3 /* oxygine_ios.xcodeproj */,
@@ -212,6 +218,7 @@
 		04998D4417F8A9ED003441C3 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				4FA53B8B218338E400035C9E /* ios */,
 				360377333740D8A2FD15BBE6 /* example.cpp */,
 				0BF9628FC8D38F9748F0CDEB /* main.cpp */,
 				4DA100C319512824B7570663 /* test.cpp */,
@@ -258,6 +265,15 @@
 				4FA53B7F2183349800035C9E /* iosFacebook.mm */,
 			);
 			path = ios;
+			sourceTree = "<group>";
+		};
+		4FA53B8B218338E400035C9E /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				4FA53B90218338F200035C9E /* AppDelegate.h */,
+				4FA53B91218338F200035C9E /* AppDelegate.mm */,
+			);
+			name = ios;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -353,6 +369,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4FA53B9421833A2000035C9E /* HelloWorldFacebook_ios-Info.plist in Resources */,
 				04E9AD3F1876FE84006A7317 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -368,6 +385,7 @@
 				2DC477AC10D6C07B3FE008F6 /* example.cpp in Sources */,
 				DA49ED8903C628BA578C8670 /* main.cpp in Sources */,
 				C8860D93875589970329DCCD /* test.cpp in Sources */,
+				4FA53B92218338F200035C9E /* AppDelegate.mm in Sources */,
 				4FA53B7C2183348000035C9E /* facebook.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
