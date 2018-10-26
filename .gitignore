@@ -15,3 +15,4 @@ example/HelloWorldFacebook/proj.android/proj.android.iml
 *.dll
 example/HelloWorldFacebook/proj.win32/Debug_v141/
 *.user
+example/HelloWorldFacebook/proj.cmake/build/
