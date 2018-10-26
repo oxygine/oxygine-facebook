@@ -4,10 +4,9 @@
     If you just started here and don't understand the code completely, feel free to come back later.
     You can start from example.cpp and example.h, which main functions are called from here.
 */
-#include "core/oxygine.h"
-#include "Stage.h"
-#include "DebugActor.h"
-
+#include "ox/oxygine.hpp"
+#include "ox/Stage.hpp"
+#include "ox/DebugActor.hpp"
 #include "example.h"
 
 
@@ -17,6 +16,11 @@ using namespace oxygine;
 // This function is called each frame
 int mainloop()
 {
+    // Update engine-internal components
+    // If input events are available, they are passed to Stage::instance.handleEvent
+    // If the function returns true, it means that the user requested the application to terminate
+    bool done = core::update();
+
     // It gets passed to our example game implementation
     example_update();
 
@@ -34,11 +38,6 @@ int mainloop()
         core::swapDisplayBuffers();
     }
 
-    // Update engine-internal components
-    // If input events are available, they are passed to Stage::instance.handleEvent
-    // If the function returns true, it means that the user requested the application to terminate
-    bool done = core::update();
-
     return done ? 1 : 0;
 }
 
@@ -51,12 +50,9 @@ void run()
     core::init_desc desc;
     desc.title = "Oxygine Application";
 
-#if OXYGINE_SDL || OXYGINE_EMSCRIPTEN
-    // The initial window size can be set up here on SDL builds
+    // The initial window size can be set up here on SDL builds, ignored on Mobile devices
     desc.w = 960;
     desc.h = 640;
-    // Marmalade settings can be modified from the emulator's menu
-#endif
 
 
     example_preinit();
@@ -64,7 +60,7 @@ void run()
 
 
     // Create the stage. Stage is a root node for all updateable and drawable objects
-    Stage::instance = new Stage(true);
+    Stage::instance = new Stage();
     Point size = core::getDisplaySize();
     getStage()->setSize(size);
 
@@ -82,6 +78,12 @@ void run()
     return;
 #endif
 
+
+
+#if TARGET_OS_IPHONE || TARGET_OS_SIMULATOR
+    // On iPhone mainloop is called automatically by CADisplayLink, see int main() below
+    //return;
+#endif
 
     // This is the main game loop.
     while (1)
@@ -120,37 +122,31 @@ void run()
     //end
 }
 
-#ifdef __S3E__
-int main(int argc, char* argv[])
-{
-    run();
-    return 0;
-}
-#endif
-
-
 #ifdef OXYGINE_SDL
 
 #include "SDL_main.h"
+#include "SDL.h"
+
 extern "C"
 {
+    void one(void* param) { mainloop(); }
+    void oneEmsc() { mainloop(); }
+
     int main(int argc, char* argv[])
     {
+
         run();
+
+#if TARGET_OS_IPHONE || TARGET_OS_SIMULATOR
+        // If parameter 2 is set to 1, refresh rate will be 60 fps, 2 - 30 fps, 3 - 15 fps.
+        //SDL_iPhoneSetAnimationCallback(core::getWindow(), 1, one, nullptr);
+#endif
+
+#if EMSCRIPTEN
+        emscripten_set_main_loop(oneEmsc, 0, 0);
+#endif
+
         return 0;
     }
 };
-#endif
-
-#ifdef EMSCRIPTEN
-#include <emscripten.h>
-
-void one() { mainloop(); }
-
-int main(int argc, char* argv[])
-{
-    run();
-    emscripten_set_main_loop(one, 0, 0);
-    return 0;
-}
 #endif
