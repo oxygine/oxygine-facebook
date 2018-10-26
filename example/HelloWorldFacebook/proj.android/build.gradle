@@ -25,6 +25,13 @@ apply plugin: 'com.android.application'
 dependencies {
     implementation(project(':oxygine-extension'))
     implementation(project(':oxygine-lib')) { exclude module: 'oxygine-extension' }
+    
+    implementation 'com.facebook.android:facebook-android-sdk:4.+'
+    implementation(project(':oxygine-facebook')) {
+        exclude module: "support-annotations"
+        exclude module: "support-v4"
+        transitive = true
+    }
 }
 
 android {
